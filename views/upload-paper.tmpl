@@ -1,0 +1,104 @@
+{{define "title"}}Upload a practice paper{{end}}
+{{define "scripts"}}
+<script type="text/javascript" src="/static/upload/common.js"></script>
+<script type="text/javascript" src="/static/upload/paper.js"></script>
+{{end}}
+{{define "styles"}}
+<link href="/static/upload/style.css" type="text/css" rel="stylesheet">
+{{end}}
+
+{{template "header"}}
+
+{{define "content"}}
+
+<div class="ui grid">
+	<div class="one column row">
+		<div class="column">
+			<h1 class="ui header">
+				<i class="upload icon"></i>
+				<div class="content">
+					Upload a practice paper
+				</div>
+			</h1>
+
+			<form class="ui big form">
+				<div class="ui mini info message">
+					<div class="header">You're uploading a new revision</div>
+					You're uploading a new revision of an existing document.
+				</div>
+
+				<div class="ui mini info message">
+					<div class="header">All uploads must be PDFs</div>
+					Your files must be valid PDFs.
+				</div>
+
+				<div class="fields">
+					<div class="eleven wide field">
+						<label>Title</label>
+						<input type="text" name="title" placeholder="Exclude the author, subject and year" autocomplete="off">
+					</div>
+					<div class="five wide field">
+						<label>Year</label>
+						<input type="text" name="year" placeholder="Year published" autocomplete="off">
+					</div>
+				</div>
+				<div class="two fields">
+					<div class="field">
+						<label>Author</label>
+						<input type="text" name="author" placeholder="Typically an organisation or school">
+					</div>
+					<div class="field">
+						<label>Subject</label>
+						<select class="ui search dropdown" name="subject">
+							<option value="">Select subject</option>
+							<option value="chemistry">Chemistry</option>
+							<option value="spec">Mathematics Specialist</option>
+							<option value="methods">Mathematics Methods</option>
+							<option value="physics">Physics</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="two fields">
+					<div class="field" id="questions-field">
+						<label>Questions paper</label>
+						<input type="file" name="questions" accept=".pdf">
+					</div>
+
+					<div class="field" id="source-field">
+						<label>Source booklet if applicable</label>
+						<input type="file" name="source" accept=".pdf">
+					</div>
+				</div>
+
+				<div class="field" id="solutions-field">
+					<label>Solutions if available</label>
+					<input type="file" name="solutions" accept=".pdf">
+				</div>
+
+
+				<div class="ui active blue progress" style="display:none;">
+					<div class="bar" style="width:0%;">
+						<div class="progress percentage">0%</div>
+					</div>
+					<div class="label">Uploading...</div>
+				</div>
+
+				<div class="ui mini error message">
+					<div class="header"></div>
+				</div>
+
+				<input type="hidden" name="update" value="" autocomplete="off">
+
+				<button type="submit" class="ui large blue labeled icon button">
+					<i class="upload icon"></i>
+					<span class="button-text">Upload</span>
+				</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+{{end}}
+
+{{template "base" .}}

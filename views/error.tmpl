@@ -1,0 +1,26 @@
+{{define "title"}}Error :({{end}}
+{{define "scripts"}}{{end}}
+{{define "styles"}}{{end}}
+
+{{template "header" .}}
+<div class="ui container center aligned">
+	<h1 class="ui header">
+		Well, fuck.
+		<div class="sub header">
+		 	You shouldn't ever see this, but you probably will. An error has occured.
+		</div>
+	</h1>
+	<img class="ui centered rounded medium image" src="/static/images/error.jpg">
+
+	<h2 class="ui header">
+		Here's the stack trace
+		<div class="sub header">
+			Go show this to a programmer
+		</div>
+	</h2>
+	<div class="ui left aligned fluid segment">
+		<pre><code>{{.StackTrace}}</pre></code>
+	</div>
+</div>
+
+{{template "footer" .}}

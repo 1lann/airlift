@@ -1,0 +1,151 @@
+{{define "title"}}This note's name{{end}}
+{{define "scripts"}}
+<script type="text/javascript" src="/static/view/common.js"></script>
+{{end}}
+{{define "styles"}}
+<link href="/static/view/style.css" type="text/css" rel="stylesheet">
+{{end}}
+
+{{template "header"}}
+
+{{define "content"}}
+
+<div class="ui stackable grid">
+	<div class="one column row">
+		<div class="column">
+			<h1 class="ui header">
+				<i class="file text outline icon"></i>
+				<div class="content">
+					{{.Note.Title}}
+					<div class="sub header">by {{.Note.Author}}</div>
+				</div>
+			</h1>
+		</div>
+	</div>
+
+	<div class="doubling two column row">
+		<div class="column">
+			<div class="ui fluid link yellow card star-card">
+				<div class="ui padded grid">
+					<div class="sixteen wide column">
+						<h3 class="ui header">
+							{{if .HasStarred}}
+								<i class="yellow star icon"></i>
+								<div class="content">
+									{{.Note.NumStars}} stars
+									<div class="sub header">You have starred this.</div>
+								</div>
+							{{else}}
+								<i class="yellow empty star icon"></i>
+								<div class="content">
+									{{.Note.NumStars}} stars
+									<div class="sub header">Click here to star.</div>
+								</div>
+							{{end}}
+						</h3>
+					</div>
+				</div>
+			</div>
+
+			{{range .Files}}
+				<div class="fluid ui card">
+					<div class="content">
+						<div class="ui grid">
+							<div class="ui eleven wide column">
+								<h4 class="header">{{.Name}}</h4>
+							</div>
+							<div class="ui five wide right aligned column">
+								<div class="grey-text">{{.Size}}</div>
+							</div>
+						</div>
+					</div>
+					<div class="ui two bottom attached buttons">
+						<a class="ui teal button" href="{{.URL}}">
+							<i class="search icon"></i>
+							View
+						</a>
+						<a class="ui teal button" href="{{.URL}}?dl=force">
+							<i class="download icon"></i>
+							Download
+						</a>
+					</div>
+				</div>
+			{{end}}
+
+			{{if .IsAuthor}}
+				<a class="ui fluid link blue card" href="/upload/paper?modify={{.Note.ID}}">
+					<div class="ui padded grid">
+						<div class="sixteen wide column">
+							<h3 class="ui blue header">
+								<i class="edit icon"></i>
+								<div class="content">
+									Modify submission
+									<div class="sub header">Change the title, or upload a new revision</div>
+								</div>
+							</h3>
+						</div>
+					</div>
+				</a>
+			{{end}}
+		</div>
+
+		<div class="column">
+			<a class="ui fluid link card" href="/subjects/{{.Note.Subject}}">
+				<div class="ui padded grid">
+					<div class="sixteen wide column">
+						<h3 class="ui header">
+							<i class="book icon"></i>
+							<div class="content">
+								{{.Note.SubjectName}}
+								<div class="sub header">Subject</div>
+							</div>
+						</h3>
+					</div>
+				</div>
+			</a>
+
+			<div class="ui fluid card">
+				<div class="ui padded grid">
+					<div class="sixteen wide column">
+						<h3 class="ui header">
+							<i class="write icon"></i>
+							<div class="content">
+								{{.Note.Author}}
+								<div class="sub header">Author</div>
+							</div>
+						</h3>
+
+						<h3 class="ui header">
+							<i class="upload icon"></i>
+							<div class="content">
+								{{.Note.UploaderName}}
+								<div class="sub header">Uploader</div>
+							</div>
+						</h3>
+
+						<h3 class="ui header">
+							<i class="upload icon"></i>
+							<div class="content">
+								{{.UploadDate}}
+								<div class="sub header">Upload date</div>
+							</div>
+						</h3>
+
+						<h3 class="ui header">
+							<i class="edit icon"></i>
+							<div class="content">
+								{{.UpdatedDate}}
+								<div class="sub header">Last updated</div>
+							</div>
+						</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{{end}}
+
+{{template "base" .}}

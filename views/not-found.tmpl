@@ -1,0 +1,29 @@
+{{define "title"}}Page not found{{end}}
+{{define "scripts"}}{{end}}
+{{define "styles"}}
+<link href="/static/not-found/style.css" type="text/css" rel="stylesheet">
+{{end}}
+
+{{template "header"}}
+
+<div class="ui container">
+	<div class="ui huge header">
+		Airlift
+	</div>
+
+	<div class="ui large icon error message">
+		<i class="help icon"></i>
+		<div class="content">
+			<div class="header">
+				Hmm, I can't find what you're looking for
+			</div>
+			<p>Check that the URL is correct and try again.</p>
+		</div>
+	</div>
+
+	<p class="blank">
+		This space has been left blank intentionally
+	</p>
+</div>
+
+{{template "footer" .}}

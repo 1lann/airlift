@@ -1,0 +1,41 @@
+{{define "title"}}Airlift{{end}}
+{{define "scripts"}}
+<script type="text/javascript" src="/static/login/script.js"></script>
+{{end}}
+{{define "styles"}}
+<link href="/static/login/style.css" type="text/css" rel="stylesheet">
+{{end}}
+
+{{template "header" .}}
+<div class="ui container center aligned">
+	<div class="ui mobile hidden basic segment"></div>
+	<div class="ui huge header">
+		Airlift
+	</div>
+	<div class="ui centered grid">
+		<div class="row">
+			<div class="six wide computer eight wide tablet sixteen wide mobile centered column center aligned">
+				{{if .Error}}
+				<div class="ui {{.Error.Type}} message">
+					<div class="header">{{.Error.Title}}</div>
+					<p>{{.Error.Message}}</p>
+				</div>
+				{{end}}
+				<form class="ui massive form" action="/" method="post">
+					<div class="field">
+						<input type="text" name="username" placeholder="Student ID" required>
+					</div>
+					<div class="field">
+						<div class="ui huge pointing below label floating-above">
+							Your password is used for data importing and will be stored securely. Even Chuie cannot see it.
+					    </div>
+						<input type="password" name="password" placeholder="Password" required>
+					</div>
+					<button class="ui basic fluid massive standard button" type="submit">Login</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+{{template "footer" .}}

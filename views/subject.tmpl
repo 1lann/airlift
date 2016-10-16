@@ -1,0 +1,158 @@
+{{define "title"}}Test Subject{{end}}
+{{define "scripts"}}{{end}}
+{{define "styles"}}{{end}}
+
+{{template "header"}}
+
+{{define "content"}}
+
+<div class="ui grid">
+	<div class="one column row">
+		<div class="column">
+			<h1 class="ui header">
+				<i class="book icon"></i>
+				<div class="content">
+					Economics
+					<div class="sub header">Wednesday, 20th June at 1:20 PM</div>
+				</div>
+			</h1>
+		</div>
+	</div>
+
+	<div class="doubling two column row">
+		<div class="column">
+			<h2 class="ui header">
+				<i class="yellow star icon"></i>
+				<div class="content">
+					Starred notes
+					<div class="sub header">Notes that you have starred</div>
+				</div>
+			</h2>
+
+			<a class="ui fluid link card" href="">
+				<div class="ui padded grid">
+					<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
+						<h3 class="ui header">
+							<div class="content">
+								Curly Chemistry
+								<div class="sub header">by Leo Li</div>
+							</div>
+						</h3>
+					</div>
+					<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+						20 <i class="yellow star icon"></i>
+					</div>
+				</div>
+			</a>
+
+			<div class="ui disabled header">
+				You haven't starred any notes yet!
+			</div>
+
+			<h2 class="ui header">
+				<i class="sticky note outline icon"></i>
+				<div class="content">
+					All other notes
+					<div class="sub header">All other unstarred notes</div>
+				</div>
+			</h2>
+
+			<a class="ui fluid link card" href="">
+				<div class="ui padded grid">
+					<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
+						<h3 class="ui header">
+							<div class="content">
+								Curly Chemistry
+								<div class="sub header">by Leo Li</div>
+							</div>
+						</h3>
+					</div>
+					<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+						20 <i class="star icon"></i>
+					</div>
+				</div>
+			</a>
+
+			<a class="ui fluid link blue card" href="/upload/note">
+				<div class="ui padded grid">
+					<div class="sixteen wide column">
+						<h3 class="ui blue header">
+							<i class="upload icon"></i>
+							<div class="content">
+								Upload your Economics notes
+								<div class="sub header">Sharing your notes benefits everyone</div>
+							</div>
+						</h3>
+					</div>
+				</div>
+			</a>
+		</div>
+
+		<div class="column">
+			<h1 class="ui header">
+				<i class="file text outline icon"></i>
+				<div class="content">
+					Practice papers
+					<div class="sub header">Practice papers you have yet to complete</div>
+				</div>
+			</h1>
+
+			<a class="ui fluid link card" href="">
+				<div class="ui padded grid">
+					<div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+						<h3 class="ui header">
+							<div class="content">
+								2016 Practice Paper A
+								<div class="sub header">from WA Test Papers</div>
+							</div>
+						</h3>
+					</div>
+					<div class="three wide computer three wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+					</div>
+				</div>
+			</a>
+
+			<h1 class="ui header">
+				<i class="green checkmark icon"></i>
+				<div class="content">
+					Completed papers
+					<div class="sub header">Practice papers you have completed</div>
+				</div>
+			</h1>
+
+			<a class="ui fluid link card" href="">
+				<div class="ui padded grid">
+					<div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+						<h3 class="ui header">
+							<div class="content">
+								2016 Practice Paper A
+								<div class="sub header">for Chemistry from Hale</div>
+							</div>
+						</h3>
+					</div>
+					<div class="three wide computer three wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+						<i class="large green checkmark icon"></i>
+					</div>
+				</div>
+			</a>
+
+			<a class="ui fluid link blue card" href="/upload/note">
+				<div class="ui padded grid">
+					<div class="sixteen wide column">
+						<h3 class="ui blue header">
+							<i class="upload icon"></i>
+							<div class="content">
+								Upload a Economics practice paper
+								<div class="sub header">Make it easier for your peers to find practice papers</div>
+							</div>
+						</h3>
+					</div>
+				</div>
+			</a>
+		</div>
+	</div>
+
+</div>
+{{end}}
+
+{{template "base" .}}

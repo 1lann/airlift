@@ -1,0 +1,99 @@
+{{define "title"}}Schedule{{end}}
+{{define "scripts"}}{{end}}
+{{define "styles"}}{{end}}
+
+{{template "header"}}
+
+{{define "content"}}
+
+<div class="ui grid">
+	<div class="one column row">
+		<div class="column">
+			<h1 class="ui header">
+				<i class="calendar icon"></i>
+				<div class="content">
+					Upcoming exams
+					<div class="sub header">Your personalized WACE schedule</div>
+				</div>
+			</h1>
+		</div>
+	</div>
+
+	<div class="one column row">
+		<div class="column">
+			{{if .Upcoming}}
+				{{range .Upcoming}}
+					<a class="ui fluid link card {{.Color}}" href="{{.Link}}">
+						<div class="ui padded grid">
+							<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
+								<h3 class="ui {{.Color}} header">
+									{{if .Icon}}
+									<i class="{{.Icon}} icon"></i>
+									{{end}}
+									<div class="content">
+										{{.Header}}
+										<div class="sub header">{{.Description}}</div>
+									</div>
+								</h3>
+							</div>
+							<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+								{{.Action}} <i class="angle double right icon"></i>
+							</div>
+						</div>
+					</a>
+				{{end}}
+			{{else}}
+				<div class="ui green header">
+					You've completed all your exams, hooray!
+				</div>
+			{{end}}
+		</div>
+	</div>
+
+	<div class="one column row">
+		<div class="column">
+			<h1 class="ui header">
+				<i class="checkmark icon"></i>
+				<div class="content">
+					Past exams
+					<div class="sub header">Forget the past, look forward to the future!</div>
+				</div>
+			</h1>
+		</div>
+	</div>
+
+	<div class="one column row">
+		<div class="column">
+			{{if .Past}}
+				{{range .Past}}
+					<div class="ui fluid link card {{.Color}}">
+						<div class="ui padded grid">
+							<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
+								<h3 class="ui {{.Color}} header">
+									{{if .Icon}}
+									<i class="{{.Icon}} icon"></i>
+									{{end}}
+									<div class="content">
+										{{.Header}}
+										<div class="sub header">{{.Description}}</div>
+									</div>
+								</h3>
+							</div>
+							<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+								{{.Action}} <i class="angle double right icon"></i>
+							</div>
+						</div>
+					</div>
+				{{end}}
+			{{else}}
+				<div class="ui disabled header">
+					You don't have any past exams yet!
+				</div>
+			{{end}}
+		</div>
+	</div>
+</div>
+
+{{end}}
+
+{{template "base" .}}

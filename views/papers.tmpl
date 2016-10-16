@@ -1,0 +1,52 @@
+{{define "title"}}Practice Papers{{end}}
+{{define "scripts"}}{{end}}
+{{define "styles"}}{{end}}
+
+{{template "header"}}
+
+{{define "content"}}
+
+<div class="ui grid">
+	<div class="one column row">
+		<div class="column">
+			<h1 class="ui header">
+				<i class="file text outline icon"></i>
+				<div class="content">
+					Your uploaded practice papers
+					<div class="sub header">Practice papers that you have uploaded</div>
+				</div>
+			</h1>
+
+			<a class="ui fluid link blue card" href="/upload/paper">
+				<div class="ui padded grid">
+					<div class="sixteen wide column">
+						<h3 class="ui blue header">
+							<i class="upload icon"></i>
+							<div class="content">
+								Upload a practice paper
+								<div class="sub header">Make it easier for your peers to find practice papers</div>
+							</div>
+						</h3>
+					</div>
+				</div>
+			</a>
+		</div>
+	</div>
+
+	<div class="one column row">
+		<div class="column">
+			<h1 class="ui header">
+				<i class="green checkmark icon"></i>
+				<div class="content">
+					Completed practice papers
+					<div class="sub header">Practice papers you have completed</div>
+				</div>
+			</h1>
+		</div>
+	</div>
+</div>
+
+
+{{end}}
+
+{{template "base" .}}

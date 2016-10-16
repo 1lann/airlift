@@ -1,0 +1,198 @@
+{{define "title"}}This paper title goes here{{end}}
+{{define "scripts"}}
+<script type="text/javascript" src="/static/view/common.js"></script>
+{{end}}
+{{define "styles"}}
+<link href="/static/view/style.css" type="text/css" rel="stylesheet">
+{{end}}
+
+{{template "header"}}
+
+{{define "content"}}
+
+<div class="ui stackable grid">
+	<div class="one column row">
+		<div class="column">
+			<h1 class="ui header">
+				<i class="file text outline icon"></i>
+				<div class="content">
+					Chemistry 2016 Paper Name Goes Here
+					<div class="sub header">from WA Test Papers</div>
+				</div>
+			</h1>
+		</div>
+	</div>
+
+	<div class="doubling two column row">
+		<div class="column">
+			<div class="ui fluid link orange card">
+				<div class="ui padded grid">
+					<div class="sixteen wide column">
+						<h3 class="ui orange header">
+							<i class="orange remove icon"></i>
+							<div class="content">
+								Practice paper not completed
+								<div class="sub header">Click here when you complete this paper.</div>
+							</div>
+						</h3>
+					</div>
+				</div>
+			</div>
+
+			<div class="ui fluid link green card">
+				<div class="ui padded grid">
+					<div class="sixteen wide column">
+						<h3 class="ui green header">
+							<i class="green checkmark icon"></i>
+							<div class="content">
+								Practice paper completed
+							</div>
+						</h3>
+					</div>
+				</div>
+			</div>
+
+			<div class="fluid ui card">
+				<div class="content">
+					<div class="ui grid">
+						<div class="ui eleven wide column">
+							<h4 class="header">Question paper</h4>
+						</div>
+						<div class="ui five wide right aligned column">
+							<div class="grey-text">12 MB</div>
+						</div>
+					</div>
+				</div>
+				<div class="ui two bottom attached buttons">
+					<div class="ui teal button">
+						<i class="search icon"></i>
+						View
+					</div>
+					<div class="ui teal button">
+						<i class="download icon"></i>
+						Download
+					</div>
+				</div>
+			</div>
+
+			<div class="fluid ui card">
+				<div class="content">
+					<div class="ui grid">
+						<div class="ui eleven wide column">
+							<h4 class="header">Solutions</h4>
+						</div>
+						<div class="ui five wide right aligned column">
+							<div class="grey-text">12 MB</div>
+						</div>
+					</div>
+				</div>
+				<div class="ui two bottom attached buttons">
+					<div class="ui teal button">
+						<i class="search icon"></i>
+						View
+					</div>
+					<div class="ui teal button">
+						<i class="download icon"></i>
+						Download
+					</div>
+				</div>
+			</div>
+
+			<div class="fluid ui card">
+				<div class="content">
+					<div class="ui grid">
+						<div class="ui eleven wide column">
+							<h4 class="header">Source booklet</h4>
+						</div>
+						<div class="ui five wide right aligned column">
+							<div class="grey-text">12 MB</div>
+						</div>
+					</div>
+				</div>
+				<div class="ui two bottom attached buttons">
+					<div class="ui teal button">
+						<i class="search icon"></i>
+						View
+					</div>
+					<div class="ui teal button">
+						<i class="download icon"></i>
+						Download
+					</div>
+				</div>
+			</div>
+
+			<a class="ui fluid link blue card" href="/upload/paper">
+				<div class="ui padded grid">
+					<div class="sixteen wide column">
+						<h3 class="ui blue header">
+							<i class="edit icon"></i>
+							<div class="content">
+								Modify submission
+								<div class="sub header">Change the title, or upload a new revision</div>
+							</div>
+						</h3>
+					</div>
+				</div>
+			</a>
+		</div>
+
+		<div class="column">
+			<a class="ui fluid link card" href="/upload/note">
+				<div class="ui padded grid">
+					<div class="sixteen wide column">
+						<h3 class="ui header">
+							<i class="book icon"></i>
+							<div class="content">
+								Chemistry
+								<div class="sub header">Subject</div>
+							</div>
+						</h3>
+					</div>
+				</div>
+			</a>
+
+			<div class="ui fluid card">
+				<div class="ui padded grid">
+					<div class="sixteen wide column">
+						<h3 class="ui header">
+							<i class="time icon"></i>
+							<div class="content">
+								2016
+								<div class="sub header">Publication year</div>
+							</div>
+						</h3>
+
+						<h3 class="ui header">
+							<i class="write icon"></i>
+							<div class="content">
+								WA Test Papers
+								<div class="sub header">Author</div>
+							</div>
+						</h3>
+
+						<h3 class="ui header">
+							<i class="upload icon"></i>
+							<div class="content">
+								2nd December 2015
+								<div class="sub header">Upload date</div>
+							</div>
+						</h3>
+
+						<h3 class="ui header">
+							<i class="edit icon"></i>
+							<div class="content">
+								2nd December 2015
+								<div class="sub header">Last updated</div>
+							</div>
+						</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{{end}}
+
+{{template "base" .}}

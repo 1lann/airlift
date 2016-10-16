@@ -1,0 +1,157 @@
+{{define "header"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>{{template "title"}}</title>
+	<meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+	<link href="/static/common/semantic.min.css" type="text/css" rel="stylesheet">
+	<link href="/static/common/common.css" type="text/css" rel="stylesheet">
+
+	{{template "styles"}}
+</head>
+<body>
+{{end}}
+
+{{define "footer"}}
+<footer>
+	<div class="ui divider"></div>
+	<div class="ui basic center aligned padded segment">
+		<strong>Airlift</strong> by Jason Chu - <a href="mailto:me@chuie.io">me@chuie.io</a>
+	</div>
+</footer>
+
+<script type="text/javascript" src="/static/common/jquery-3.1.0.min.js"></script>
+<script type="text/javascript" src="/static/common/semantic.min.js"></script>
+<script type="text/javascript" src="/static/common/common.js"></script>
+{{template "scripts"}}
+</body>
+</html>
+{{end}}
+
+{{define "base"}}
+<div class="ui left fixed vertical menu fluid mobile only">
+	<div class="link item mobile-menu-toggle">
+		<div class="ui small header fixed-mobile-header">
+			<i class="sidebar icon"></i>
+			<div class="content">
+				Airlift <span class="mobile-beta">Beta</span>
+				<div class="sub header">Good {{.Greeting}}, {{.User.Name}}.</div>
+			</div>
+		</div>
+	</div>
+	<a {{if eq .ActiveMenu "schedule" -}}
+		class="item active"
+	{{- else -}}
+		class="item"
+	{{- end -}} href="/schedule">
+		<i class="calendar icon"></i>
+		Schedule
+	</a>
+	<a {{if eq .ActiveMenu "subjects"}}
+		class="item active"
+	{{- else -}}
+		class="item"
+	{{- end -}} href="/subjects">
+		<i class="book icon"></i>
+		Subjects
+	</a>
+	<a {{if eq .ActiveMenu "papers" -}}
+		class="item active"
+	{{- else -}}
+		class="item"
+	{{- end -}} href="/papers">
+		<i class="file text outline icon"></i>
+		Practice Papers
+	</a>
+	<a {{if eq .ActiveMenu "notes" -}}
+		class="item active"
+	{{- else -}}
+		class="item"
+	{{- end -}} href="/notes">
+		<i class="sticky note outline icon"></i>
+		Notes
+	</a>
+	<a class="item" href="/logout">
+		<i class="sign out icon"></i>
+		Logout
+	</a>
+</div>
+
+<div class="ui top fixed menu mobile only">
+	<div class="header item link mobile-menu-toggle">
+		<i class="sidebar icon"></i>
+		Airlift
+	</div>
+	<!-- <div class="right menu">
+		<div class="item">
+			<div class="ui transparent icon input mobile-search">
+				<input type="text" placeholder="Search...">
+				<i class="search link icon"></i>
+			</div>
+		</div>
+	</div> -->
+</div>
+
+<div class="ui container">
+	<div class="ui grid">
+		<div class="four wide computer five wide tablet sixteen wide mobile hidden mobile column">
+			<div class="ui large vertical menu fixed-computer-menu">
+				<div class="item">
+					<div class="ui large header">
+						Airlift <span class="beta">Beta</span>
+						<div class="sub header">Good {{.Greeting}}, {{.User.Name}}.</div>
+					</div>
+				</div>
+				<!-- <div class="item">
+					<div class="ui transparent icon input">
+						<input type="text" placeholder="Search...">
+						<i class="search link icon"></i>
+					</div>
+				</div> -->
+				<a {{if eq .ActiveMenu "schedule" -}}
+					class="item active"
+				{{- else -}}
+					class="item"
+				{{- end -}} href="/schedule">
+					<i class="calendar icon"></i>
+					Schedule
+				</a>
+				<a {{if eq .ActiveMenu "subjects"}}
+					class="item active"
+				{{- else -}}
+					class="item"
+				{{- end -}} href="/subjects">
+					<i class="book icon"></i>
+					Subjects
+				</a>
+				<a {{if eq .ActiveMenu "papers" -}}
+					class="item active"
+				{{- else -}}
+					class="item"
+				{{- end -}} href="/papers">
+					<i class="file text outline icon"></i>
+					Practice Papers
+				</a>
+				<a {{if eq .ActiveMenu "notes" -}}
+					class="item active"
+				{{- else -}}
+					class="item"
+				{{- end -}} href="/notes">
+					<i class="sticky note outline icon"></i>
+					Notes
+				</a>
+				<a class="item" href="/logout">
+					<i class="sign out icon"></i>
+					Logout
+				</a>
+			</div>
+		</div>
+		<div class="twelve wide computer eleven wide tablet sixteen wide mobile column">
+			{{template "content" .}}
+		</div>
+	</div>
+</div>
+
+{{template "footer"}}
+{{end}}
