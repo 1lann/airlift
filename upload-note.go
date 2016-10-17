@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/1lann/airlift/airlift"
-	"github.com/1lann/airlift/fs"
 	"github.com/gin-gonic/gin"
 )
 
@@ -44,36 +43,63 @@ func uploadNote(c *gin.Context) {
 		return
 	}
 
-	// hasFile := false
+	processNoteUpdate(c, &note)
+	if c.IsAborted() {
+		return
+	}
+
+	err = airlift.UpdateNote(note)
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"id": note.ID,
+	})
+}
+
+func processNoteUpdate(c *gin.Context, note *airlift.Note) {
+	hasFile := true
 	file, _, err := c.Request.FormFile("file")
 	if err != nil {
 		if err != http.ErrMissingFile {
 			panic(err)
 		}
 
-		// hasFile = true
+		hasFile = false
 	}
 
-	// TODO: Check for `update`, validate permissions and compare to hasFile.
-	// Otherwise NotAcceptable
+	update := c.PostForm("update")
 
-	id, err := airlift.NewNote(note)
-	if err != nil {
-		panic(err)
-	}
+	if update != "" {
+		var dbNote airlift.Note
+		dbNote, err := airlift.GetNote(update)
+		if err != nil {
+			panic(err)
+		}
 
-	err = fs.UploadFile("airlift", "notes/"+id+".pdf", "application/pdf", file)
-	if err == fs.ErrTooBig {
-		c.AbortWithStatus(http.StatusRequestEntityTooLarge)
+		if dbNote.Author != note.Author {
+			c.AbortWithStatus(http.StatusNotAcceptable)
+			return
+		}
+
+		note.ID = dbNote.ID
+	} else if !hasFile {
+		c.AbortWithStatus(http.StatusNotAcceptable)
 		return
-	} else if err == fs.ErrInvalidType {
-		c.AbortWithStatus(http.StatusUnsupportedMediaType)
-		return
-	} else if err != nil {
-		panic(err)
+	} else {
+		var err error
+		note.ID, err = airlift.NewNote(note.Title)
+		if err != nil {
+			panic(err)
+		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"id": id,
-	})
+	if hasFile {
+		note.Size = uploadFile(note.ID, file, "notes", c)
+		if c.IsAborted() {
+			airlift.DeleteNote(note.ID)
+			return
+		}
+	}
 }

@@ -18,4 +18,4 @@ $("input[type='password']").focus(function() {
 
 $("form").on("submit", function() {
 	$("button").addClass("loading disabled");
-})
+});

@@ -2,14 +2,12 @@ package main
 
 import (
 	"errors"
-	"mime/multipart"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 
 	"github.com/1lann/airlift/airlift"
-	"github.com/1lann/airlift/fs"
 	"github.com/gin-gonic/gin"
 )
 
@@ -55,30 +53,53 @@ func uploadPaper(c *gin.Context) {
 		return
 	}
 
-	var id string
+	update := c.PostForm("update")
 
-	if c.PostForm("update") == "" {
-		id, err = airlift.NewPaper(paper)
+	if update != "" {
+		var dbPaper airlift.Paper
+		dbPaper, err = airlift.GetPaper(update)
 		if err != nil {
 			panic(err)
 		}
+
+		if dbPaper.Author != paper.Author {
+			c.AbortWithStatus(http.StatusNotAcceptable)
+			return
+		}
+
+		paper.ID = dbPaper.ID
 	} else {
-		// TODO: Check paper exists and permissions, if not then NotAcceptable
+		var id string
+		id, err = airlift.NewPaper(paper.Title)
+		if err != nil {
+			panic(err)
+		}
+
+		paper.ID = id
 	}
 
 	wg := new(sync.WaitGroup)
-	uploadPaperFiles(id, wg, c, &paper)
+	uploadPaperFiles(paper.ID, wg, c, &paper)
 
-	// TODO: Update database
-
-	wg.Wait()
-
-	if c.IsAborted() {
+	if update == "" && paper.QuestionsSize == 0 {
+		airlift.DeletePaper(paper.ID)
+		c.AbortWithStatus(http.StatusNotAcceptable)
 		return
 	}
 
+	wg.Wait()
+	if c.IsAborted() {
+		airlift.DeletePaper(paper.ID)
+		return
+	}
+
+	err = airlift.UpdatePaper(paper)
+	if err != nil {
+		panic(err)
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"id": id,
+		"id": paper.ID,
 	})
 }
 
@@ -89,11 +110,10 @@ func uploadPaperFiles(id string, wg *sync.WaitGroup, c *gin.Context, paper *airl
 			panic(err)
 		}
 	} else {
-		paper.HasSource = true
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			uploadSource(id, source, c)
+			paper.SourceSize = uploadFile(id, source, "sources", c)
 		}()
 	}
 
@@ -103,11 +123,10 @@ func uploadPaperFiles(id string, wg *sync.WaitGroup, c *gin.Context, paper *airl
 			panic(err)
 		}
 	} else {
-		paper.HasSolutions = true
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			uploadSolutions(id, solutions, c)
+			paper.SolutionsSize = uploadFile(id, solutions, "solutions", c)
 		}()
 	}
 
@@ -120,46 +139,7 @@ func uploadPaperFiles(id string, wg *sync.WaitGroup, c *gin.Context, paper *airl
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			uploadQuestions(id, paperFile, c)
+			paper.QuestionsSize = uploadFile(id, paperFile, "papers", c)
 		}()
-	}
-}
-
-func uploadQuestions(id string, paper multipart.File, c *gin.Context) {
-	err := fs.UploadFile("airlift", "papers/"+id+".pdf", "application/pdf", paper)
-	if err == fs.ErrTooBig {
-		c.AbortWithStatus(http.StatusRequestEntityTooLarge)
-		return
-	} else if err == fs.ErrInvalidType {
-		c.AbortWithStatus(http.StatusUnsupportedMediaType)
-		return
-	} else if err != nil {
-		panic(err)
-	}
-}
-
-func uploadSolutions(id string, solutions multipart.File, c *gin.Context) {
-	err := fs.UploadFile("airlift", "solutions/"+id+".pdf", "application/pdf", solutions)
-	if err == fs.ErrTooBig {
-		c.AbortWithStatus(http.StatusRequestEntityTooLarge)
-		return
-	} else if err == fs.ErrInvalidType {
-		c.AbortWithStatus(http.StatusUnsupportedMediaType)
-		return
-	} else if err != nil {
-		panic(err)
-	}
-}
-
-func uploadSource(id string, solutions multipart.File, c *gin.Context) {
-	err := fs.UploadFile("airlift", "sources/"+id+".pdf", "application/pdf", solutions)
-	if err == fs.ErrTooBig {
-		c.AbortWithStatus(http.StatusRequestEntityTooLarge)
-		return
-	} else if err == fs.ErrInvalidType {
-		c.AbortWithStatus(http.StatusUnsupportedMediaType)
-		return
-	} else if err != nil {
-		panic(err)
 	}
 }

@@ -83,18 +83,18 @@ func StatFile(bucket, name string) (File, error) {
 }
 
 // UploadFile uploads a file to a bucket
-func UploadFile(bucket, name, requiredType string, rd io.Reader) error {
+func UploadFile(bucket, name, requiredType string, rd io.Reader) (uint64, error) {
 	buf := make([]byte, 1024)
 	_, err := io.ReadFull(rd, buf)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	contentType := http.DetectContentType(buf)
 	bufRd := bytes.NewReader(buf)
 
 	if contentType != requiredType {
-		return ErrInvalidType
+		return 0, ErrInvalidType
 	}
 
 	limitedRd := io.LimitReader(io.MultiReader(bufRd, rd), MaxUpload)
@@ -103,14 +103,14 @@ func UploadFile(bucket, name, requiredType string, rd io.Reader) error {
 	if err != nil {
 		client.RemoveObject(bucket, name)
 		client.RemoveIncompleteUpload(bucket, name)
-		return err
+		return 0, err
 	}
 
 	if n >= MaxUpload {
 		client.RemoveObject(bucket, name)
 		client.RemoveIncompleteUpload(bucket, name)
-		return ErrTooBig
+		return 0, ErrTooBig
 	}
 
-	return nil
+	return uint64(n), nil
 }

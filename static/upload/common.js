@@ -60,7 +60,13 @@ function uploadForm(fd, url) {
       currentlyUploading = false
       setProgress("green", "Upload complete!", false)
 
-      console.log(result.id)
+      if (url == "/upload/note") {
+        window.location = "/notes/" + result.id
+      } else if (url == "/upload/paper") {
+        window.location = "/papers/" + result.id
+      } else {
+        console.log("airlift: unknown upload type")
+      }
     },
     error: function(result) {
       currentlyUploading = false

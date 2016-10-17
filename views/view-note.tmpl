@@ -1,6 +1,7 @@
 {{define "title"}}This note's name{{end}}
 {{define "scripts"}}
 <script type="text/javascript" src="/static/view/common.js"></script>
+<script type="text/javascript" src="/static/view/note.js"></script>
 {{end}}
 {{define "styles"}}
 <link href="/static/view/style.css" type="text/css" rel="stylesheet">
@@ -25,20 +26,20 @@
 
 	<div class="doubling two column row">
 		<div class="column">
-			<div class="ui fluid link yellow card star-card">
+			<div class="ui fluid link yellow card star-card" has-starred="{{.HasStarred}}" stars="{{.Note.NumStars}}" note-id="{{.Note.ID}}">
 				<div class="ui padded grid">
 					<div class="sixteen wide column">
 						<h3 class="ui header">
 							{{if .HasStarred}}
 								<i class="yellow star icon"></i>
 								<div class="content">
-									{{.Note.NumStars}} stars
+									{{.Note.NumStars}} {{if eq .Note.NumStars 1}}star{{else}}stars{{end}}
 									<div class="sub header">You have starred this.</div>
 								</div>
 							{{else}}
 								<i class="yellow empty star icon"></i>
 								<div class="content">
-									{{.Note.NumStars}} stars
+									{{.Note.NumStars}} {{if eq .Note.NumStars 1}}star{{else}}stars{{end}}
 									<div class="sub header">Click here to star.</div>
 								</div>
 							{{end}}
@@ -73,7 +74,7 @@
 			{{end}}
 
 			{{if .IsAuthor}}
-				<a class="ui fluid link blue card" href="/upload/paper?modify={{.Note.ID}}">
+				<a class="ui fluid link blue card" href="/upload/note?update={{.Note.ID}}">
 					<div class="ui padded grid">
 						<div class="sixteen wide column">
 							<h3 class="ui blue header">

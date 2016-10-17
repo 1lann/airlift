@@ -3,6 +3,7 @@ package airlift
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"strings"
 	"time"
 
@@ -13,14 +14,15 @@ import (
 type Note struct {
 	ID          string    `gorethink:"id"`
 	Title       string    `gorethink:"title"`
-	Public      bool      `gorethink:"public"`
 	Subject     string    `gorethink:"subject"`
 	Author      string    `gorethink:"author"`
 	Uploader    string    `gorethink:"uploader"`
-	Stars       []string  `gorethink:"stars"`
+	Public      bool      `gorethink:"public"`
+	Size        uint64    `gorethink:"size,omitempty"`
+	Stars       []string  `gorethink:"stars,omitempty"`
 	NumStars    int       `gorethink:"num_stars,omitempty"`
-	UpdatedTime time.Time `gorethink:"updated_time"`
-	UploadTime  time.Time `gorethink:"upload_time"`
+	UpdatedTime time.Time `gorethink:"updated_time,omitempty"`
+	UploadTime  time.Time `gorethink:"upload_time,omitempty"`
 }
 
 // FullNote represents a note with some additional data
@@ -37,6 +39,7 @@ func GetFullNote(id string) (FullNote, error) {
 		return map[string]interface{}{
 			"uploader_name": r.Table("users").Get(row.Field("uploader")).Field("name"),
 			"subject_name":  r.Table("subjects").Get(row.Field("subject")).Field("name"),
+			"num_stars":     row.Field("stars").Count(),
 		}
 	}).Default(map[string]string{}), &note)
 	if err != nil {
@@ -69,10 +72,12 @@ func idFromNote(note Note) (string, error) {
 }
 
 // NewNote creates a new note and returns a unique human friendly ID.
-// The title must be filesystem safe.
-func NewNote(note Note) (string, error) {
+// Data must be populated using UpdateNote.
+func NewNote(title string) (string, error) {
+	var note Note
+
+	note.Title = title
 	note.UploadTime = time.Now()
-	note.UpdatedTime = note.UploadTime
 
 	for {
 		var err error
@@ -92,4 +97,60 @@ func NewNote(note Note) (string, error) {
 	}
 
 	return note.ID, nil
+}
+
+// UpdateNote updates the information of a note
+func UpdateNote(note Note) error {
+	note.UpdatedTime = time.Now()
+	note.UploadTime = time.Time{}
+
+	result, err := r.Table("notes").Get(note.ID).Update(note).RunWrite(session)
+	if err != nil {
+		return err
+	}
+
+	if result.Errors > 0 {
+		return errors.New("airlift: " + result.FirstError)
+	}
+
+	return nil
+}
+
+// DeleteNote deletes a note
+func DeleteNote(id string) error {
+	result, err := r.Table("notes").Get(id).Delete().RunWrite(session)
+	if err != nil {
+		return err
+	}
+
+	if result.Errors > 0 {
+		return errors.New("airlift: " + result.FirstError)
+	}
+
+	return nil
+}
+
+// SetNoteStar sets the status of a note's star
+func SetNoteStar(id string, username string, starred bool) error {
+	var query r.Term
+	if starred {
+		query = r.Table("notes").Get(id).Update(map[string]interface{}{
+			"stars": r.Row.Field("stars").SetInsert(username),
+		})
+	} else {
+		query = r.Table("notes").Get(id).Update(map[string]interface{}{
+			"stars": r.Row.Field("stars").SetDifference([]string{username}),
+		})
+	}
+
+	result, err := query.RunWrite(session)
+	if err != nil {
+		return err
+	}
+
+	if result.Errors > 0 {
+		return errors.New("airlift: " + result.FirstError)
+	}
+
+	return nil
 }

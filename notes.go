@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/1lann/airlift/airlift"
-	"github.com/1lann/airlift/fs"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gin-gonic/contrib/renders/multitemplate"
 	"github.com/gin-gonic/gin"
@@ -29,6 +28,18 @@ func init() {
 		t.AddFromFiles("view-note", viewsPath+"/view-note.tmpl",
 			viewsPath+"/components/base.tmpl")
 		r.GET("/notes/:id", viewNote)
+
+		r.POST("/notes/:id/star", func(c *gin.Context) {
+			starred := c.PostForm("starred") == "true"
+			username := c.MustGet("user").(airlift.User).Username
+
+			err := airlift.SetNoteStar(c.Param("id"), username, starred)
+			if err != nil {
+				panic(err)
+			}
+
+			c.JSON(http.StatusOK, gin.H{"status": "ok"})
+		})
 	})
 }
 
@@ -44,11 +55,6 @@ func viewNote(c *gin.Context) {
 		return
 	}
 
-	stat, err := fs.StatFile("airlift", "notes/"+note.ID+".pdf")
-	if err != nil {
-		panic(err)
-	}
-
 	user := c.MustGet("user").(airlift.User)
 
 	hasStarred := false
@@ -61,7 +67,7 @@ func viewNote(c *gin.Context) {
 	files := []fileCard{
 		{
 			Name: "Notes",
-			Size: humanize.Bytes(uint64(stat.ObjectInfo.Size)),
+			Size: humanize.Bytes(note.Size),
 			URL:  "/download/notes/" + note.ID,
 		},
 	}
@@ -71,7 +77,7 @@ func viewNote(c *gin.Context) {
 		"Note":        note,
 		"HasStarred":  hasStarred,
 		"Files":       files,
-		"IsAuthor":    note.Author == user.Username,
+		"IsAuthor":    note.Uploader == user.Username,
 		"UploadDate":  formatBasicTime(note.UploadTime),
 		"UpdatedDate": formatBasicTime(note.UpdatedTime),
 	})
