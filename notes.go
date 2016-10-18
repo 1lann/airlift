@@ -1,29 +1,27 @@
 package main
 
 import (
+	"log"
 	"net/http"
-	"strconv"
+	"sync"
 	"time"
 
 	"github.com/1lann/airlift/airlift"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gin-gonic/contrib/renders/multitemplate"
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 func formatBasicTime(t time.Time) string {
-	return getDay(t) + " " + t.Month().String() + " " + strconv.Itoa(t.Year())
+	return getDay(t) + " " + t.Format("January 2006 at 3:04 PM")
 }
 
 func init() {
 	registers = append(registers, func(r *gin.RouterGroup, t multitemplate.Render) {
 		t.AddFromFiles("notes", viewsPath+"/notes.tmpl",
 			viewsPath+"/components/base.tmpl")
-		r.GET("/notes", func(c *gin.Context) {
-			htmlOK(c, "notes", gin.H{
-				"ActiveMenu": "notes",
-			})
-		})
+		r.GET("/notes", viewUserNotes)
 
 		t.AddFromFiles("view-note", viewsPath+"/view-note.tmpl",
 			viewsPath+"/components/base.tmpl")
@@ -45,7 +43,9 @@ func init() {
 
 func viewNote(c *gin.Context) {
 	id := c.Param("id")
-	note, err := airlift.GetFullNote(id)
+	user := c.MustGet("user").(airlift.User)
+
+	note, err := airlift.GetFullNote(id, user.Username)
 	if err != nil {
 		panic(err)
 	}
@@ -53,15 +53,6 @@ func viewNote(c *gin.Context) {
 	if note.Title == "" {
 		c.HTML(http.StatusNotFound, "not-found", nil)
 		return
-	}
-
-	user := c.MustGet("user").(airlift.User)
-
-	hasStarred := false
-	for _, star := range note.Stars {
-		if star == user.Username {
-			hasStarred = true
-		}
 	}
 
 	files := []fileCard{
@@ -72,13 +63,61 @@ func viewNote(c *gin.Context) {
 		},
 	}
 
+	session := sessions.Default(c)
+	uploadFlashes := session.Flashes("upload")
+	log.Println(uploadFlashes)
+	uploadSuccess := ""
+	if len(uploadFlashes) > 0 {
+		uploadSuccess = uploadFlashes[0].(string)
+	}
+	session.Save()
+
 	htmlOK(c, "view-note", gin.H{
-		"ActiveMenu":  "notes",
-		"Note":        note,
-		"HasStarred":  hasStarred,
-		"Files":       files,
-		"IsAuthor":    note.Uploader == user.Username,
-		"UploadDate":  formatBasicTime(note.UploadTime),
-		"UpdatedDate": formatBasicTime(note.UpdatedTime),
+		"ActiveMenu":    "notes",
+		"Note":          note,
+		"Files":         files,
+		"IsUploader":    note.Uploader == user.Username,
+		"UploadTime":    formatBasicTime(note.UploadTime),
+		"UpdatedTime":   formatBasicTime(note.UpdatedTime),
+		"UploadSuccess": uploadSuccess,
+	})
+}
+
+func viewUserNotes(c *gin.Context) {
+	user := c.MustGet("user").(airlift.User)
+
+	wg := new(sync.WaitGroup)
+	wg.Add(2)
+
+	var starred []airlift.Note
+	go func() {
+		defer func() {
+			wg.Done()
+		}()
+		var err error
+		starred, err = airlift.GetStarredNotes(user.Username)
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	var uploaded []airlift.Note
+	go func() {
+		defer func() {
+			wg.Done()
+		}()
+		var err error
+		uploaded, err = airlift.GetUploadedNotes(user.Username)
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	wg.Wait()
+
+	htmlOK(c, "notes", gin.H{
+		"ActiveMenu": "notes",
+		"Starred":    starred,
+		"Uploaded":   uploaded,
 	})
 }

@@ -6,17 +6,18 @@ import (
 	"strings"
 
 	"github.com/1lann/airlift/airlift"
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 func parseNoteForm(c *gin.Context) (airlift.Note, error) {
-	title := strings.TrimSpace(c.PostForm("title"))
+	title := strings.Title(strings.TrimSpace(c.PostForm("title")))
 	if !isTitleValid(title) {
 		return airlift.Note{}, errors.New("upload: form validation error")
 
 	}
 
-	author := strings.TrimSpace(c.PostForm("author"))
+	author := strings.Title(strings.TrimSpace(c.PostForm("author")))
 	if author == "" {
 		return airlift.Note{}, errors.New("upload: form validation error")
 
@@ -27,12 +28,15 @@ func parseNoteForm(c *gin.Context) (airlift.Note, error) {
 		return airlift.Note{}, errors.New("upload: form validation error")
 	}
 
+	user := c.MustGet("user").(airlift.User)
+
 	return airlift.Note{
 		Title:    title,
 		Public:   true,
 		Author:   author,
 		Subject:  subject,
-		Uploader: c.MustGet("user").(airlift.User).Username,
+		Stars:    []string{user.Username},
+		Uploader: user.Username,
 	}, nil
 }
 
@@ -70,6 +74,7 @@ func processNoteUpdate(c *gin.Context, note *airlift.Note) {
 	}
 
 	update := c.PostForm("update")
+	session := sessions.Default(c)
 
 	if update != "" {
 		var dbNote airlift.Note
@@ -84,6 +89,7 @@ func processNoteUpdate(c *gin.Context, note *airlift.Note) {
 		}
 
 		note.ID = dbNote.ID
+		session.AddFlash("update", "upload")
 	} else if !hasFile {
 		c.AbortWithStatus(http.StatusNotAcceptable)
 		return
@@ -93,6 +99,7 @@ func processNoteUpdate(c *gin.Context, note *airlift.Note) {
 		if err != nil {
 			panic(err)
 		}
+		session.AddFlash("success", "upload")
 	}
 
 	if hasFile {
@@ -102,4 +109,6 @@ func processNoteUpdate(c *gin.Context, note *airlift.Note) {
 			return
 		}
 	}
+
+	session.Save()
 }

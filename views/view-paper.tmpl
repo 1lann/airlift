@@ -1,12 +1,13 @@
-{{define "title"}}This paper title goes here{{end}}
+{{define "title"}}{{.Paper.Title}}{{end}}
 {{define "scripts"}}
 <script type="text/javascript" src="/static/view/common.js"></script>
+<script type="text/javascript" src="/static/view/paper.js"></script>
 {{end}}
 {{define "styles"}}
 <link href="/static/view/style.css" type="text/css" rel="stylesheet">
 {{end}}
 
-{{template "header"}}
+{{template "header" .}}
 
 {{define "content"}}
 
@@ -16,8 +17,8 @@
 			<h1 class="ui header">
 				<i class="file text outline icon"></i>
 				<div class="content">
-					Chemistry 2016 Paper Name Goes Here
-					<div class="sub header">from WA Test Papers</div>
+					{{.Paper.Year}} {{.Paper.SubjectName}} {{.Paper.Title}}
+					<div class="sub header">from {{.Paper.Author}}</div>
 				</div>
 			</h1>
 		</div>
@@ -25,125 +26,86 @@
 
 	<div class="doubling two column row">
 		<div class="column">
-			<div class="ui fluid link orange card">
-				<div class="ui padded grid">
-					<div class="sixteen wide column">
-						<h3 class="ui orange header">
-							<i class="orange remove icon"></i>
-							<div class="content">
-								Practice paper not completed
-								<div class="sub header">Click here when you complete this paper.</div>
+
+			{{if .Paper.HasCompleted}}
+				<div class="ui fluid link green card complete-card" paper-id="{{.Paper.ID}}">
+					<div class="ui padded grid">
+						<div class="sixteen wide column">
+							<h3 class="ui green header">
+								<i class="green checkmark icon"></i>
+								<div class="content">
+									Practice paper completed
+								</div>
+							</h3>
+						</div>
+					</div>
+				</div>
+			{{else}}
+				<div class="ui fluid link orange card complete-card" paper-id="{{.Paper.ID}}">
+					<div class="ui padded grid">
+						<div class="sixteen wide column">
+							<h3 class="ui orange header">
+								<i class="orange remove icon"></i>
+								<div class="content">
+									Practice paper not completed
+									<div class="sub header">Click here when you complete this paper.</div>
+								</div>
+							</h3>
+						</div>
+					</div>
+				</div>
+			{{end}}
+
+			{{range .Files}}
+				<div class="fluid ui card">
+					<div class="content">
+						<div class="ui grid">
+							<div class="ui eleven wide column">
+								<h4 class="header">{{.Name}}</h4>
 							</div>
-						</h3>
-					</div>
-				</div>
-			</div>
-
-			<div class="ui fluid link green card">
-				<div class="ui padded grid">
-					<div class="sixteen wide column">
-						<h3 class="ui green header">
-							<i class="green checkmark icon"></i>
-							<div class="content">
-								Practice paper completed
+							<div class="ui five wide right aligned column">
+								<div class="grey-text">{{.Size}}</div>
 							</div>
-						</h3>
+						</div>
+					</div>
+					<div class="ui two bottom attached buttons">
+						<a class="ui teal button" href="{{.URL}}" target="_blank">
+							<i class="search icon"></i>
+							View
+						</a>
+						<a class="ui teal button" href="{{.URL}}?dl=force" target="_blank">
+							<i class="download icon"></i>
+							Download
+						</a>
 					</div>
 				</div>
-			</div>
+			{{end}}
 
-			<div class="fluid ui card">
-				<div class="content">
-					<div class="ui grid">
-						<div class="ui eleven wide column">
-							<h4 class="header">Question paper</h4>
-						</div>
-						<div class="ui five wide right aligned column">
-							<div class="grey-text">12 MB</div>
-						</div>
-					</div>
-				</div>
-				<div class="ui two bottom attached buttons">
-					<div class="ui teal button">
-						<i class="search icon"></i>
-						View
-					</div>
-					<div class="ui teal button">
-						<i class="download icon"></i>
-						Download
-					</div>
-				</div>
-			</div>
-
-			<div class="fluid ui card">
-				<div class="content">
-					<div class="ui grid">
-						<div class="ui eleven wide column">
-							<h4 class="header">Solutions</h4>
-						</div>
-						<div class="ui five wide right aligned column">
-							<div class="grey-text">12 MB</div>
+			{{if .IsUploader}}
+				<a class="ui fluid link blue card" href="/upload/paper?update={{.Paper.ID}}">
+					<div class="ui padded grid">
+						<div class="sixteen wide column">
+							<h3 class="ui blue header">
+								<i class="edit icon"></i>
+								<div class="content">
+									Modify submission
+									<div class="sub header">Change the title, or upload a new revision</div>
+								</div>
+							</h3>
 						</div>
 					</div>
-				</div>
-				<div class="ui two bottom attached buttons">
-					<div class="ui teal button">
-						<i class="search icon"></i>
-						View
-					</div>
-					<div class="ui teal button">
-						<i class="download icon"></i>
-						Download
-					</div>
-				</div>
-			</div>
-
-			<div class="fluid ui card">
-				<div class="content">
-					<div class="ui grid">
-						<div class="ui eleven wide column">
-							<h4 class="header">Source booklet</h4>
-						</div>
-						<div class="ui five wide right aligned column">
-							<div class="grey-text">12 MB</div>
-						</div>
-					</div>
-				</div>
-				<div class="ui two bottom attached buttons">
-					<div class="ui teal button">
-						<i class="search icon"></i>
-						View
-					</div>
-					<div class="ui teal button">
-						<i class="download icon"></i>
-						Download
-					</div>
-				</div>
-			</div>
-
-			<a class="ui fluid link blue card" href="/upload/paper">
-				<div class="ui padded grid">
-					<div class="sixteen wide column">
-						<h3 class="ui blue header">
-							<i class="edit icon"></i>
-							<div class="content">
-								Modify submission
-								<div class="sub header">Change the title, or upload a new revision</div>
-							</div>
-						</h3>
-					</div>
-				</div>
-			</a>
+				</a>
+			{{end}}
 		</div>
 
 		<div class="column">
-			<a class="ui fluid link card" href="/upload/note">
+			<a class="ui fluid link card" href="/subjects/{{.Paper.Subject}}">
 				<div class="ui padded grid">
 					<div class="sixteen wide column">
 						<h3 class="ui header">
 							<i class="book icon"></i>
 							<div class="content">
-								Chemistry
+								{{.Paper.SubjectName}}
 								<div class="sub header">Subject</div>
 							</div>
 						</h3>
@@ -157,7 +119,7 @@
 						<h3 class="ui header">
 							<i class="time icon"></i>
 							<div class="content">
-								2016
+								{{.Paper.Year}}
 								<div class="sub header">Publication year</div>
 							</div>
 						</h3>
@@ -165,7 +127,7 @@
 						<h3 class="ui header">
 							<i class="write icon"></i>
 							<div class="content">
-								WA Test Papers
+								{{.Paper.Author}}
 								<div class="sub header">Author</div>
 							</div>
 						</h3>
@@ -173,15 +135,23 @@
 						<h3 class="ui header">
 							<i class="upload icon"></i>
 							<div class="content">
-								2nd December 2015
-								<div class="sub header">Upload date</div>
+								{{.Paper.UploaderName}}
+								<div class="sub header">Uploader</div>
+							</div>
+						</h3>
+
+						<h3 class="ui header">
+							<i class="upload icon"></i>
+							<div class="content">
+								{{.UploadTime}}
+								<div class="sub header">Upload time</div>
 							</div>
 						</h3>
 
 						<h3 class="ui header">
 							<i class="edit icon"></i>
 							<div class="content">
-								2nd December 2015
+								{{.UpdatedTime}}
 								<div class="sub header">Last updated</div>
 							</div>
 						</h3>

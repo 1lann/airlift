@@ -22,40 +22,45 @@
 			</h1>
 
 			<form class="ui big form">
+				{{if .Update}}
 				<div class="ui mini info message">
-					<div class="header">You're uploading a new revision</div>
-					You're uploading a new revision of an existing document.
+					<div class="header">Modifying submission</div>
+					You're modifying the submission of an existing upload
 				</div>
+				{{end}}
 
 				<div class="ui mini info message">
-					<div class="header">All uploads must be PDFs</div>
-					Your files must be valid PDFs.
+					<div class="header">All uploads must be valid PDFs</div>
 				</div>
 
 				<div class="fields">
 					<div class="eleven wide field">
 						<label>Title</label>
-						<input type="text" name="title" placeholder="Exclude the author, subject and year" autocomplete="off">
+						<input type="text" name="title" placeholder="Exclude the author, subject and year" autocomplete="off" value="{{.Paper.Title}}">
 					</div>
 					<div class="five wide field">
 						<label>Year</label>
-						<input type="text" name="year" placeholder="Year published" autocomplete="off">
+						<input type="text" name="year" placeholder="Year published" autocomplete="off" value="{{.Paper.Year}}">
 					</div>
 				</div>
 				<div class="two fields">
 					<div class="field">
 						<label>Author</label>
-						<input type="text" name="author" placeholder="Typically an organisation or school">
+						<input type="text" name="author" placeholder="Typically an organisation or school" value="{{.Paper.Author}}">
 					</div>
 					<div class="field">
 						<label>Subject</label>
-						<select class="ui search dropdown" name="subject">
-							<option value="">Select subject</option>
-							<option value="chemistry">Chemistry</option>
-							<option value="spec">Mathematics Specialist</option>
-							<option value="methods">Mathematics Methods</option>
-							<option value="physics">Physics</option>
-						</select>
+						<div class="ui selection dropdown">
+							<input type="hidden" name="subject" value="{{if .Paper.Subject}}{{.Paper.Subject}}{{else}}{{.FilledSubject}}{{end}}">
+							<i class="dropdown icon"></i>
+							<div class="default text">Select subject</div>
+							<div class="menu">
+								<div class="item" data-value="">Select subject</div>
+								{{range .Subjects}}
+									<div class="item" data-value="{{.ID}}">{{.Name}}</div>
+								{{end}}
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -92,7 +97,7 @@
 
 				<button type="submit" class="ui large blue labeled icon button">
 					<i class="upload icon"></i>
-					<span class="button-text">Upload</span>
+					<span class="button-text">{{if .Update}}Update{{else}}Upload{{end}}</span>
 				</button>
 			</form>
 		</div>

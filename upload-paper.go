@@ -8,16 +8,17 @@ import (
 	"sync"
 
 	"github.com/1lann/airlift/airlift"
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 func parsePaperForm(c *gin.Context) (airlift.Paper, error) {
-	title := strings.TrimSpace(c.PostForm("title"))
+	title := strings.Title(strings.TrimSpace(c.PostForm("title")))
 	if !isTitleValid(title) {
 		return airlift.Paper{}, errors.New("upload: form validation error")
 	}
 
-	author := strings.TrimSpace(c.PostForm("author"))
+	author := strings.Title(strings.TrimSpace(c.PostForm("author")))
 	if author == "" {
 		return airlift.Paper{}, errors.New("upload: form validation error")
 	}
@@ -32,7 +33,8 @@ func parsePaperForm(c *gin.Context) (airlift.Paper, error) {
 	}
 
 	subject := c.PostForm("subject")
-	if !isSubject(subject, c.MustGet("user").(airlift.User)) {
+	user := c.MustGet("user").(airlift.User)
+	if !isSubject(subject, user) {
 		return airlift.Paper{}, errors.New("upload: form validation error")
 	}
 
@@ -42,7 +44,7 @@ func parsePaperForm(c *gin.Context) (airlift.Paper, error) {
 		Public:   true,
 		Author:   author,
 		Subject:  subject,
-		Uploader: c.MustGet("user").(airlift.User).Username,
+		Uploader: user.Username,
 	}, nil
 }
 
@@ -54,6 +56,7 @@ func uploadPaper(c *gin.Context) {
 	}
 
 	update := c.PostForm("update")
+	session := sessions.Default(c)
 
 	if update != "" {
 		var dbPaper airlift.Paper
@@ -68,28 +71,27 @@ func uploadPaper(c *gin.Context) {
 		}
 
 		paper.ID = dbPaper.ID
+		session.AddFlash("update", "upload")
 	} else {
 		var id string
-		id, err = airlift.NewPaper(paper.Title)
+		id, err = airlift.NewPaper(paper.Title, paper.Subject, paper.Year)
 		if err != nil {
 			panic(err)
 		}
 
 		paper.ID = id
+		session.AddFlash("success", "upload")
 	}
 
-	wg := new(sync.WaitGroup)
-	uploadPaperFiles(paper.ID, wg, c, &paper)
+	uploadPaperFiles(paper.ID, c, &paper)
+	if c.IsAborted() {
+		airlift.DeletePaper(paper.ID)
+		return
+	}
 
 	if update == "" && paper.QuestionsSize == 0 {
 		airlift.DeletePaper(paper.ID)
 		c.AbortWithStatus(http.StatusNotAcceptable)
-		return
-	}
-
-	wg.Wait()
-	if c.IsAborted() {
-		airlift.DeletePaper(paper.ID)
 		return
 	}
 
@@ -98,12 +100,16 @@ func uploadPaper(c *gin.Context) {
 		panic(err)
 	}
 
+	session.Save()
+
 	c.JSON(http.StatusOK, gin.H{
 		"id": paper.ID,
 	})
 }
 
-func uploadPaperFiles(id string, wg *sync.WaitGroup, c *gin.Context, paper *airlift.Paper) {
+func uploadPaperFiles(id string, c *gin.Context, paper *airlift.Paper) {
+	wg := new(sync.WaitGroup)
+
 	source, _, err := c.Request.FormFile("source")
 	if err != nil {
 		if err != http.ErrMissingFile {
@@ -142,4 +148,6 @@ func uploadPaperFiles(id string, wg *sync.WaitGroup, c *gin.Context, paper *airl
 			paper.QuestionsSize = uploadFile(id, paperFile, "papers", c)
 		}()
 	}
+
+	wg.Wait()
 }

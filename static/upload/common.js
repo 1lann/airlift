@@ -1,4 +1,4 @@
-$("select.dropdown").dropdown()
+$(".ui.dropdown").dropdown()
 
 var progressBar = $(".ui.progress")
 var progressText = $(".progress .label")

@@ -52,24 +52,107 @@ func init() {
 	registers = append(registers, func(r *gin.RouterGroup, t multitemplate.Render) {
 		t.AddFromFiles("upload-note", viewsPath+"/upload-note.tmpl",
 			viewsPath+"/components/base.tmpl")
-		r.GET("/upload/note", func(c *gin.Context) {
-			htmlOK(c, "upload-note", gin.H{
-				"ActiveMenu": "notes",
-				"Update":     c.Query("update"),
-			})
-		})
+		r.GET("/upload/note", viewUploadNote)
 
 		t.AddFromFiles("upload-paper", viewsPath+"/upload-paper.tmpl",
 			viewsPath+"/components/base.tmpl")
-		r.GET("/upload/paper", func(c *gin.Context) {
-			// TODO: Pre fill both forms
-			htmlOK(c, "upload-paper", gin.H{
-				"ActiveMenu": "papers",
-				"Update":     c.Query("update"),
-			})
-		})
+		r.GET("/upload/paper", viewUploadPaper)
 
 		r.POST("/upload/note", uploadNote)
 		r.POST("/upload/paper", uploadPaper)
+	})
+}
+
+func viewUploadNote(c *gin.Context) {
+	id := c.Query("update")
+
+	var note airlift.Note
+	if id != "" {
+		var err error
+		note, err = airlift.GetNote(id)
+		if err != nil {
+			panic(err)
+		}
+
+		if note.Title == "" {
+			c.Redirect(http.StatusSeeOther, "/upload/note")
+			return
+		}
+	}
+
+	user := c.MustGet("user").(airlift.User)
+
+	filledSubject := c.Query("subject")
+	subjectFound := false
+	for _, subject := range user.Schedule {
+		if filledSubject == subject {
+			subjectFound = true
+			break
+		}
+	}
+
+	if !subjectFound {
+		filledSubject = ""
+	}
+
+	subjects, err := airlift.GetAlphaScheduleFor(user)
+	if err != nil {
+		panic(err)
+	}
+
+	htmlOK(c, "upload-note", gin.H{
+		"ActiveMenu":    "notes",
+		"Update":        id,
+		"Note":          note,
+		"Uploader":      user.Name,
+		"Subjects":      subjects,
+		"FilledSubject": filledSubject,
+	})
+}
+
+func viewUploadPaper(c *gin.Context) {
+	id := c.Query("update")
+
+	var paper airlift.Paper
+	if id != "" {
+		var err error
+		paper, err = airlift.GetPaper(id)
+		if err != nil {
+			panic(err)
+		}
+
+		if paper.Title == "" {
+			c.Redirect(http.StatusSeeOther, "/upload/paper")
+			return
+		}
+	}
+
+	user := c.MustGet("user").(airlift.User)
+
+	filledSubject := c.Query("subject")
+	subjectFound := false
+	for _, subject := range user.Schedule {
+		if filledSubject == subject {
+			subjectFound = true
+			break
+		}
+	}
+
+	if !subjectFound {
+		filledSubject = ""
+	}
+
+	subjects, err := airlift.GetAlphaScheduleFor(user)
+	if err != nil {
+		panic(err)
+	}
+
+	htmlOK(c, "upload-paper", gin.H{
+		"ActiveMenu":    "papers",
+		"Update":        id,
+		"Paper":         paper,
+		"Uploader":      user.Name,
+		"Subjects":      subjects,
+		"FilledSubject": filledSubject,
 	})
 }

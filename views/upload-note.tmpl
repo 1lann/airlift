@@ -22,34 +22,41 @@
 			</h1>
 
 			<form class="ui big form">
+				{{if .Update}}
 				<div class="ui mini info message">
-					<div class="header">You're uploading a new revision</div>
-					You're uploading a new revision of an existing document.
+					<div class="header">Modifying submission</div>
+					You're modifying the submission of an existing upload
 				</div>
+				{{end}}
 
 				<div class="ui mini info message">
-					<div class="header">All uploads must be PDFs</div>
-					Your files must be valid PDFs.
+					<div class="header">
+						All uploads must be valid PDFs
+					</div>
 				</div>
 
 				<div class="field">
 					<label>Title</label>
-					<input type="text" name="title" placeholder="Name this work!" autocomplete="off">
+					<input type="text" name="title" placeholder="Name this work!" value="{{.Note.Title}}" autocomplete="off">
 				</div>
 				<div class="two fields">
 					<div class="field">
 						<label>Author</label>
-						<input type="text" name="author" placeholder="Credit this work if it isn't yours!" value="Jason Chu">
+						<input type="text" name="author" placeholder="Credit this work if it isn't yours!" value="{{if .Update}}{{.Note.Author}}{{else}}{{.Uploader}}{{end}}">
 					</div>
 					<div class="field">
 						<label>Subject</label>
-						<select class="ui search dropdown" name="subject">
-							<option value="">Select subject</option>
-							<option value="chemistry">Chemistry</option>
-							<option value="spec">Mathematics Specialist</option>
-							<option value="methods">Mathematics Methods</option>
-							<option value="physics">Physics</option>
-						</select>
+						<div class="ui selection dropdown">
+							<input type="hidden" name="subject" value="{{if .Note.Subject}}{{.Note.Subject}}{{else}}{{.FilledSubject}}{{end}}">
+							<i class="dropdown icon"></i>
+							<div class="default text">Select subject</div>
+							<div class="menu">
+								<div class="item" data-value="">Select subject</div>
+								{{range .Subjects}}
+									<div class="item" data-value="{{.ID}}">{{.Name}}</div>
+								{{end}}
+							</div>
+						</div>
 					</div>
 				</div>
 				<div class="field" id="file-field">
@@ -72,7 +79,7 @@
 
 				<button type="submit" class="ui large blue labeled icon button">
 					<i class="upload icon"></i>
-					<span class="button-text">Upload</span>
+					<span class="button-text">{{if .Update}}Update{{else}}Upload{{end}}</span>
 				</button>
 			</form>
 		</div>

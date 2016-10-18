@@ -7,13 +7,15 @@ $(".star-card").click(function() {
     starred = false;
     this.setAttribute("has-starred", "false");
     this.setAttribute("stars", stars);
-    $(".star.icon").addClass("empty");
+    $(".star.icon").addClass("grey");
+    $(".star.icon").removeClass("yellow");
   } else {
     stars = stars + 1;
     starred = true;
     this.setAttribute("has-starred", "true");
     this.setAttribute("stars", stars);
-    $(".star.icon").removeClass("empty");
+    $(".star.icon").removeClass("grey");
+    $(".star.icon").addClass("yellow");
   }
 
   $.post("/notes/" + noteID + "/star", {starred: starred.toString()});

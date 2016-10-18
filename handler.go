@@ -40,6 +40,10 @@ func main() {
 	registerBaseHandlers(r, t)
 
 	store := sessions.NewCookieStore([]byte(sessionSecret))
+	store.Options(sessions.Options{
+		HttpOnly: true,
+		Path:     "/",
+	})
 	r.Use(sessions.Sessions("airlift", store))
 
 	rg := r.Group("/")
@@ -111,6 +115,7 @@ func authMiddleware(c *gin.Context) {
 
 func registerBaseHandlers(r *gin.Engine, t multitemplate.Render) {
 	r.Use(secure.Secure(secure.Options{
+		// TODO: Make secure
 		// AllowedHosts:          []string{"example.com", "ssl.example.com"},
 		// SSLRedirect:           true,
 		// STSSeconds:            315360000,

@@ -39,7 +39,7 @@ type listCard struct {
 
 func scheduleHandler(c *gin.Context) {
 	user := c.MustGet("user").(airlift.User)
-	schedule, err := airlift.ScheduleFor(user)
+	schedule, err := airlift.GetScheduleFor(user)
 	if err != nil {
 		panic(err)
 	}

@@ -24,7 +24,7 @@ func init() {
 				subjectCards[i] = listCard{
 					Header:      subject.Name,
 					Description: formatScheduleTime(subject.ExamTime),
-					Action:      "View info",
+					Action:      "View subject",
 					Link:        "/subjects/" + subject.ID,
 				}
 			}
@@ -39,10 +39,32 @@ func init() {
 			viewsPath+"/components/base.tmpl")
 		r.GET("/subjects/:id", func(c *gin.Context) {
 			id := c.Param("id")
+			user := c.MustGet("user").(airlift.User)
 
-			subject, err := airlift.GetFullSubject(id)
+			subject, err := airlift.GetFullSubject(id, user.Username)
 			if err != nil {
 				panic(err)
+			}
+
+			var starredNotes []airlift.Note
+			var otherNotes []airlift.Note
+			var uncompletedPapers []airlift.Paper
+			var completedPapers []airlift.Paper
+
+			for _, note := range subject.Notes {
+				if note.HasStarred {
+					starredNotes = append(starredNotes, note)
+				} else {
+					otherNotes = append(otherNotes, note)
+				}
+			}
+
+			for _, paper := range subject.Papers {
+				if paper.HasCompleted {
+					completedPapers = append(completedPapers, paper)
+				} else {
+					uncompletedPapers = append(uncompletedPapers, paper)
+				}
 			}
 
 			if subject.Name == "" {

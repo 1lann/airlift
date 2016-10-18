@@ -19,14 +19,27 @@ type Paper struct {
 	Subject       string    `gorethink:"subject"`
 	Author        string    `gorethink:"author"`
 	Public        bool      `gorethink:"public"`
-	SolutionsSize uint64    `gorethink:"solutions_size,omitempty"`
-	SourceSize    uint64    `gorethink:"source_size,omitempty"`
-	QuestionsSize uint64    `gorethink:"questions_size,omitempty"`
-	Completed     []string  `gorethink:"completed,omitempty"`
-	NumCompleted  int       `gorethink:"num_completed,omitempty"`
+	SolutionsSize uint64    `gorethink:"solutions_size"`
+	SourceSize    uint64    `gorethink:"source_size"`
+	QuestionsSize uint64    `gorethink:"questions_size"`
+	Completed     []string  `gorethink:"completed"`
 	Uploader      string    `gorethink:"uploader"`
-	UpdatedTime   time.Time `gorethink:"updated_time"`
-	UploadTime    time.Time `gorethink:"upload_time"`
+	HasCompleted  bool      `gorethink:"has_completed,omitempty"`
+	NumCompleted  int       `gorethink:"num_completed,omitempty"`
+	UpdatedTime   time.Time `gorethink:"updated_time,omitempty"`
+	UploadTime    time.Time `gorethink:"upload_time,omitempty"`
+}
+
+// FullPaper represents a user uploaded paper with additional data
+type FullPaper struct {
+	Paper
+	UploaderName string `gorethink:"uploader_name"`
+	SubjectName  string `gorethink:"subject_name"`
+}
+
+var rowFullPaperTitle = func(row r.Term) interface{} {
+	return row.Field("year").CoerceTo("string").
+		Add(" ", row.Field("subject"), " ", row.Field("title"))
 }
 
 // TODO: Make a get full paper and use it in download.go
@@ -44,7 +57,7 @@ func GetPaper(id string) (Paper, error) {
 
 func idFromPaper(paper Paper) (string, error) {
 	title := strings.ToLower(strings.Replace(paper.Title, " ", "_", -1))
-	title = strconv.Itoa(paper.Year) + "_" + title
+	title = strconv.Itoa(paper.Year) + "_" + paper.Subject + "_" + title
 	nonce := make([]byte, 2)
 	_, err := rand.Read(nonce)
 	if err != nil {
@@ -87,11 +100,13 @@ func DeletePaper(id string) error {
 
 // NewPaper creates a new paper and returns a unique human friendly ID.
 // Data must be populated using UpdatePaper.
-func NewPaper(title string) (string, error) {
+func NewPaper(title, subject string, year int) (string, error) {
 	var paper Paper
 
 	paper.Title = title
 	paper.UploadTime = time.Now()
+	paper.Subject = subject
+	paper.Year = year
 
 	for {
 		var err error
@@ -111,4 +126,83 @@ func NewPaper(title string) (string, error) {
 	}
 
 	return paper.ID, nil
+}
+
+// SetPaperCompleted marks a practice paper as completed for a user.
+func SetPaperCompleted(id, username string, completed bool) error {
+	var query r.Term
+	if completed {
+		query = r.Table("papers").Get(id).Update(map[string]interface{}{
+			"completed": r.Row.Field("completed").SetInsert(username),
+		})
+	} else {
+		query = r.Table("papers").Get(id).Update(map[string]interface{}{
+			"completed": r.Row.Field("completed").SetDifference([]string{username}),
+		})
+	}
+
+	result, err := query.RunWrite(session)
+	if err != nil {
+		return err
+	}
+
+	if result.Errors > 0 {
+		return errors.New("airlift: " + result.FirstError)
+	}
+
+	return nil
+}
+
+// GetCompletedPapers returns the papers starred by a user.
+func GetCompletedPapers(username string) ([]FullPaper, error) {
+	var papers []FullPaper
+	err := getAll(r.Table("papers").
+		GetAllByIndex("completed", username).
+		OrderBy(r.Desc(rowFullPaperTitle)).
+		Merge(func(row r.Term) interface{} {
+			return map[string]interface{}{
+				"has_completed": row.Field("completed").Contains(username),
+				"uploader_name": r.Table("users").Get(row.Field("uploader")).
+					Field("name").Default("Unknown"),
+				"subject_name": r.Table("subjects").Get(row.Field("subject")).
+					Field("name").Default("Unknown"),
+			}
+		}),
+		&papers)
+	return papers, err
+}
+
+// GetUploadedPapers returns the papers uploaded by a user.
+func GetUploadedPapers(username string) ([]FullPaper, error) {
+	var papers []FullPaper
+	err := getAll(r.Table("papers").
+		GetAllByIndex("uploader", username).
+		OrderBy(r.Desc(rowFullPaperTitle)).
+		Merge(func(row r.Term) interface{} {
+			return map[string]interface{}{
+				"has_completed": row.Field("completed").Contains(username),
+				"uploader_name": r.Table("users").Get(row.Field("uploader")).
+					Field("name").Default("Unknown"),
+				"subject_name": r.Table("subjects").Get(row.Field("subject")).
+					Field("name").Default("Unknown"),
+			}
+		}),
+		&papers)
+	return papers, err
+}
+
+// GetFullPaper returns the paper with additional data uploaded by a user.
+func GetFullPaper(id, username string) (FullPaper, error) {
+	var paper FullPaper
+	err := getOne(r.Table("papers").Get(id).
+		Merge(func(row r.Term) interface{} {
+			return map[string]interface{}{
+				"has_completed": row.Field("completed").Contains(username),
+				"uploader_name": r.Table("users").Get(row.Field("uploader")).
+					Field("name").Default("Unknown"),
+				"subject_name": r.Table("subjects").Get(row.Field("subject")).
+					Field("name").Default("Unknown"),
+			}
+		}), &paper)
+	return paper, err
 }

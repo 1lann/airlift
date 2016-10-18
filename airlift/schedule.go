@@ -5,13 +5,28 @@ import r "github.com/dancannon/gorethink"
 // Schedule represents the schedule for a user.
 type Schedule []Subject
 
-// ScheduleFor returns the schedule for a user.
-func ScheduleFor(user User) (Schedule, error) {
+// GetScheduleFor returns the schedule for a user.
+func GetScheduleFor(user User) (Schedule, error) {
 	results := Schedule{}
 	err := getAll(r.
 		Table("subjects").
 		GetAll(r.Args(user.Schedule)).
 		OrderBy(r.Asc("exam_time")),
+		&results)
+	if err != nil {
+		return Schedule{}, err
+	}
+	return results, nil
+}
+
+// GetAlphaScheduleFor returns the schedule for a user sorted by alphabetical
+// order for use in selections.
+func GetAlphaScheduleFor(user User) (Schedule, error) {
+	results := Schedule{}
+	err := getAll(r.
+		Table("subjects").
+		GetAll(r.Args(user.Schedule)).
+		OrderBy(r.Asc("name")),
 		&results)
 	if err != nil {
 		return Schedule{}, err

@@ -48,18 +48,23 @@ func GetSubject(id string) (Subject, error) {
 
 // GetFullSubject returns a subject along with its notes ordered by
 // stars and papers ordered by publication year.
-func GetFullSubject(id string) (FullSubject, error) {
+func GetFullSubject(id, username string) (FullSubject, error) {
 	var subject FullSubject
 	err := getOne(r.Table("subjects").Get(id).Default(map[string]string{}).
 		Merge(map[string]interface{}{
 			"notes": r.Table("notes").GetAllByIndex("subject", id).
 				Merge(func(note r.Term) interface{} {
 					return map[string]interface{}{
-						"num_stars": note.Field("stars").Count().Default(0),
+						"num_stars":   note.Field("stars").Count().Default(0),
+						"has_starred": note.Field("stars").Contains(username),
 					}
 				}).OrderBy(r.Desc("num_stars")).CoerceTo("array"),
 			"papers": r.Table("papers").GetAllByIndex("subject", id).
-				OrderBy(r.Desc("year")).CoerceTo("array"),
+				OrderBy(r.Desc(rowFullPaperTitle)).Merge(func(paper r.Term) interface{} {
+				return map[string]interface{}{
+					"has_completed": paper.Field("completed").Contains(username),
+				}
+			}).CoerceTo("array"),
 		}), &subject)
 
 	if err != nil {

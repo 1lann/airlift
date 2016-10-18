@@ -10,7 +10,7 @@ import (
 	r "github.com/dancannon/gorethink"
 )
 
-// Note represents a user uploaded note file
+// Note represents a user uploaded note file.
 type Note struct {
 	ID          string    `gorethink:"id"`
 	Title       string    `gorethink:"title"`
@@ -18,28 +18,44 @@ type Note struct {
 	Author      string    `gorethink:"author"`
 	Uploader    string    `gorethink:"uploader"`
 	Public      bool      `gorethink:"public"`
-	Size        uint64    `gorethink:"size,omitempty"`
-	Stars       []string  `gorethink:"stars,omitempty"`
+	Size        uint64    `gorethink:"size"`
+	Stars       []string  `gorethink:"stars"`
+	HasStarred  bool      `gorethink:"has_starred,omitempty"`
 	NumStars    int       `gorethink:"num_stars,omitempty"`
 	UpdatedTime time.Time `gorethink:"updated_time,omitempty"`
 	UploadTime  time.Time `gorethink:"upload_time,omitempty"`
 }
 
-// FullNote represents a note with some additional data
+type updateNote struct {
+	ID          string    `gorethink:"id"`
+	Title       string    `gorethink:"title"`
+	Subject     string    `gorethink:"subject"`
+	Author      string    `gorethink:"author"`
+	Uploader    string    `gorethink:"uploader"`
+	Public      bool      `gorethink:"public"`
+	Stars       []string  `gorethink:"stars,omitempty"`
+	Size        uint64    `gorethink:"size,omitempty"`
+	UpdatedTime time.Time `gorethink:"updated_time,omitempty"`
+}
+
+// FullNote represents a note with some additional data.
 type FullNote struct {
 	Note
 	UploaderName string `gorethink:"uploader_name"`
 	SubjectName  string `gorethink:"subject_name"`
 }
 
-// GetFullNote returns a note and some additional data given its ID
-func GetFullNote(id string) (FullNote, error) {
+// GetFullNote returns a note and some additional data given its ID.
+func GetFullNote(id, username string) (FullNote, error) {
 	var note FullNote
 	err := getOne(r.Table("notes").Get(id).Merge(func(row r.Term) interface{} {
 		return map[string]interface{}{
-			"uploader_name": r.Table("users").Get(row.Field("uploader")).Field("name"),
-			"subject_name":  r.Table("subjects").Get(row.Field("subject")).Field("name"),
-			"num_stars":     row.Field("stars").Count(),
+			"has_starred": row.Field("stars").Contains(username),
+			"uploader_name": r.Table("users").Get(row.Field("uploader")).
+				Field("name"),
+			"subject_name": r.Table("subjects").Get(row.Field("subject")).
+				Field("name"),
+			"num_stars": row.Field("stars").Count(),
 		}
 	}).Default(map[string]string{}), &note)
 	if err != nil {
@@ -49,7 +65,7 @@ func GetFullNote(id string) (FullNote, error) {
 	return note, nil
 }
 
-// GetNote returns a note given its ID
+// GetNote returns a note given its ID.
 func GetNote(id string) (Note, error) {
 	var note Note
 	err := getOne(r.Table("notes").Get(id), &note)
@@ -99,12 +115,21 @@ func NewNote(title string) (string, error) {
 	return note.ID, nil
 }
 
-// UpdateNote updates the information of a note
+// UpdateNote updates the information of a note.
 func UpdateNote(note Note) error {
-	note.UpdatedTime = time.Now()
-	note.UploadTime = time.Time{}
+	updatedNote := updateNote{
+		ID:          note.ID,
+		Title:       note.Title,
+		Subject:     note.Subject,
+		Author:      note.Author,
+		Uploader:    note.Uploader,
+		Public:      note.Public,
+		Size:        note.Size,
+		Stars:       note.Stars,
+		UpdatedTime: time.Now(),
+	}
 
-	result, err := r.Table("notes").Get(note.ID).Update(note).RunWrite(session)
+	result, err := r.Table("notes").Get(note.ID).Update(updatedNote).RunWrite(session)
 	if err != nil {
 		return err
 	}
@@ -116,7 +141,7 @@ func UpdateNote(note Note) error {
 	return nil
 }
 
-// DeleteNote deletes a note
+// DeleteNote deletes a note.
 func DeleteNote(id string) error {
 	result, err := r.Table("notes").Get(id).Delete().RunWrite(session)
 	if err != nil {
@@ -130,8 +155,8 @@ func DeleteNote(id string) error {
 	return nil
 }
 
-// SetNoteStar sets the status of a note's star
-func SetNoteStar(id string, username string, starred bool) error {
+// SetNoteStar sets the status of a note's star.
+func SetNoteStar(id, username string, starred bool) error {
 	var query r.Term
 	if starred {
 		query = r.Table("notes").Get(id).Update(map[string]interface{}{
@@ -153,4 +178,31 @@ func SetNoteStar(id string, username string, starred bool) error {
 	}
 
 	return nil
+}
+
+// GetStarredNotes returns the notes starred by a user.
+func GetStarredNotes(username string) ([]Note, error) {
+	var notes []Note
+	err := getAll(r.Table("notes").
+		GetAllByIndex("stars", username).
+		OrderBy(r.Desc("title")).
+		Merge(map[string]interface{}{
+			"num_stars": r.Row.Field("stars").Count(),
+		}),
+		&notes)
+	return notes, err
+}
+
+// GetUploadedNotes returns the notes uploaded by a user.
+func GetUploadedNotes(username string) ([]Note, error) {
+	var notes []Note
+	err := getAll(r.Table("notes").
+		GetAllByIndex("uploader", username).
+		OrderBy(r.Desc("title")).
+		Merge(map[string]interface{}{
+			"num_stars":   r.Row.Field("stars").Count(),
+			"has_starred": r.Row.Field("stars").Contains(username),
+		}),
+		&notes)
+	return notes, err
 }

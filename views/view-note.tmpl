@@ -1,4 +1,4 @@
-{{define "title"}}This note's name{{end}}
+{{define "title"}}{{.Note.Title}}{{end}}
 {{define "scripts"}}
 <script type="text/javascript" src="/static/view/common.js"></script>
 <script type="text/javascript" src="/static/view/note.js"></script>
@@ -7,7 +7,7 @@
 <link href="/static/view/style.css" type="text/css" rel="stylesheet">
 {{end}}
 
-{{template "header"}}
+{{template "header" .}}
 
 {{define "content"}}
 
@@ -21,23 +21,45 @@
 					<div class="sub header">by {{.Note.Author}}</div>
 				</div>
 			</h1>
+
+			{{if eq .UploadSuccess "success"}}
+			<div class="ui success icon message">
+				<i class="checkmark icon"></i>
+				<div class="content">
+					<div class="header">
+						Your notes have been uploaded
+					</div>
+					Thanks for contributing your notes!
+				</div>
+			</div>
+			{{end}}
+			{{if eq .UploadSuccess "update"}}
+			<div class="ui info icon message">
+				<i class="checkmark icon"></i>
+				<div class="content">
+					<div class="header">
+						Your changes have been saved
+					</div>
+				</div>
+			</div>
+			{{end}}
 		</div>
 	</div>
 
 	<div class="doubling two column row">
 		<div class="column">
-			<div class="ui fluid link yellow card star-card" has-starred="{{.HasStarred}}" stars="{{.Note.NumStars}}" note-id="{{.Note.ID}}">
+			<div class="ui fluid link yellow card star-card" has-starred="{{.Note.HasStarred}}" stars="{{.Note.NumStars}}" note-id="{{.Note.ID}}">
 				<div class="ui padded grid">
 					<div class="sixteen wide column">
 						<h3 class="ui header">
-							{{if .HasStarred}}
+							{{if .Note.HasStarred}}
 								<i class="yellow star icon"></i>
 								<div class="content">
 									{{.Note.NumStars}} {{if eq .Note.NumStars 1}}star{{else}}stars{{end}}
 									<div class="sub header">You have starred this.</div>
 								</div>
 							{{else}}
-								<i class="yellow empty star icon"></i>
+								<i class="grey star icon"></i>
 								<div class="content">
 									{{.Note.NumStars}} {{if eq .Note.NumStars 1}}star{{else}}stars{{end}}
 									<div class="sub header">Click here to star.</div>
@@ -61,11 +83,11 @@
 						</div>
 					</div>
 					<div class="ui two bottom attached buttons">
-						<a class="ui teal button" href="{{.URL}}">
+						<a class="ui teal button" href="{{.URL}}" target="_blank">
 							<i class="search icon"></i>
 							View
 						</a>
-						<a class="ui teal button" href="{{.URL}}?dl=force">
+						<a class="ui teal button" href="{{.URL}}?dl=force" target="_blank">
 							<i class="download icon"></i>
 							Download
 						</a>
@@ -73,7 +95,7 @@
 				</div>
 			{{end}}
 
-			{{if .IsAuthor}}
+			{{if .IsUploader}}
 				<a class="ui fluid link blue card" href="/upload/note?update={{.Note.ID}}">
 					<div class="ui padded grid">
 						<div class="sixteen wide column">
@@ -127,15 +149,15 @@
 						<h3 class="ui header">
 							<i class="upload icon"></i>
 							<div class="content">
-								{{.UploadDate}}
-								<div class="sub header">Upload date</div>
+								{{.UploadTime}}
+								<div class="sub header">Upload time</div>
 							</div>
 						</h3>
 
 						<h3 class="ui header">
 							<i class="edit icon"></i>
 							<div class="content">
-								{{.UpdatedDate}}
+								{{.UpdatedTime}}
 								<div class="sub header">Last updated</div>
 							</div>
 						</h3>

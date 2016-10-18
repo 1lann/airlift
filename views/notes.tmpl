@@ -17,9 +17,29 @@
 				</div>
 			</h1>
 
-			<div class="ui disabled header">
-				You haven't starred any notes yet!
-			</div>
+			{{if .Starred}}
+				{{range .Starred}}
+				<a class="ui fluid link yellow card" href="/notes/{{.ID}}">
+					<div class="ui padded grid">
+						<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
+							<h3 class="ui header">
+								<div class="content">
+									{{.Title}}
+									<div class="sub header">by {{.Author}}</div>
+								</div>
+							</h3>
+						</div>
+						<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+							{{.NumStars}} <i class="yellow star icon"></i>
+						</div>
+					</div>
+				</a>
+				{{end}}
+			{{else}}
+				<div class="ui disabled header">
+					You haven't starred any notes yet!
+				</div>
+			{{end}}
 		</div>
 
 		<div class="column">
@@ -31,9 +51,29 @@
 				</div>
 			</h1>
 
-			<div class="ui disabled header">
-				You haven't uploaded any notes yet!
-			</div>
+			{{if .Uploaded}}
+				{{range .Uploaded}}
+				<a class="ui fluid link {{if .HasStarred}}yellow {{end}}card" href="/notes/{{.ID}}">
+					<div class="ui padded grid">
+						<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
+							<h3 class="ui header">
+								<div class="content">
+									{{.Title}}
+									<div class="sub header">by {{.Author}}</div>
+								</div>
+							</h3>
+						</div>
+						<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+							{{.NumStars}} <i class="{{if .HasStarred}}yellow{{else}}grey{{end}} star icon"></i>
+						</div>
+					</div>
+				</a>
+				{{end}}
+			{{else}}
+				<div class="ui disabled header">
+					You haven't uploaded any notes yet!
+				</div>
+			{{end}}
 
 			<a class="ui fluid link blue card" href="/upload/note">
 				<div class="ui padded grid">
