@@ -68,7 +68,7 @@ func GetFullNote(id, username string) (FullNote, error) {
 // GetNote returns a note given its ID.
 func GetNote(id string) (Note, error) {
 	var note Note
-	err := getOne(r.Table("notes").Get(id), &note)
+	err := getOne(r.Table("notes").Get(id).Default(map[string]int{}), &note)
 	if err != nil {
 		return Note{}, err
 	}

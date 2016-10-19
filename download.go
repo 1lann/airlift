@@ -29,6 +29,8 @@ func init() {
 			if err == errFileNotFound {
 				c.HTML(http.StatusNotFound, "not-found", nil)
 				return
+			} else if err != nil {
+				panic(err)
 			}
 
 			file, err := fs.RetrieveFile("airlift", fileType+"/"+id+".pdf")
