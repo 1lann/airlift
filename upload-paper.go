@@ -65,7 +65,7 @@ func uploadPaper(c *gin.Context) {
 			panic(err)
 		}
 
-		if dbPaper.Author != paper.Author {
+		if dbPaper.Uploader != paper.Uploader {
 			c.AbortWithStatus(http.StatusNotAcceptable)
 			return
 		}

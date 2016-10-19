@@ -92,3 +92,15 @@ $("form").form({
     onSuccess: submitForm
   }
 )
+
+$(".delete-button").click(function() {
+  var paperID = $(".ui.modal").attr("paper-id");
+  $(".ui.modal").modal({
+    onApprove: function() {
+			$.post("/delete/paper", {"id": paperID}, function(success) {
+        window.location = "/papers"
+      })
+			return false;
+		}
+  }).modal("show");
+})

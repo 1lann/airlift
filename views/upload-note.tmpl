@@ -81,6 +81,28 @@
 					<i class="upload icon"></i>
 					<span class="button-text">{{if .Update}}Update{{else}}Upload{{end}}</span>
 				</button>
+
+				{{if .Update}}
+				<button class="ui large red labeled icon button delete-button" type="button">
+					<i class="trash icon"></i>
+					<span class="button-text">Delete</span>
+				</button>
+
+				<div class="ui small modal" note-id="{{.Note.ID}}">
+					<div class="header">Delete notes</div>
+					<div class="content">
+						<p>Are you sure you want to delete these notes?</p>
+					</div>
+					<div class="actions">
+						<div class="ui ok red large button">
+							<i class="trash icon"></i> Delete it
+						</div>
+						<div class="ui cancel green large button">
+							Nevermind
+						</div>
+					</div>
+				</div>
+				{{end}}
 			</form>
 		</div>
 	</div>

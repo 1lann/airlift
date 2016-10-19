@@ -63,6 +63,11 @@ func RetrieveFile(bucket, name string) (File, error) {
 	}, nil
 }
 
+// DeleteFile deletes a file in a bucket.
+func DeleteFile(bucket, name string) error {
+	return client.RemoveObject(bucket, name)
+}
+
 // StatFile retrieves only the ObjectInfo component of a file in a bucket.
 func StatFile(bucket, name string) (File, error) {
 	stat, err := client.StatObject(bucket, name)

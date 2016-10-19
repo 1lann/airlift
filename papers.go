@@ -124,11 +124,20 @@ func viewUserPapers(c *gin.Context) {
 		}
 	}()
 
+	deleted := false
+	session := sessions.Default(c)
+	uploadFlashes := session.Flashes("upload")
+	if len(uploadFlashes) > 0 && uploadFlashes[0] == "delete" {
+		deleted = true
+	}
+	session.Save()
+
 	wg.Wait()
 
 	htmlOK(c, "papers", gin.H{
 		"ActiveMenu": "papers",
 		"Completed":  completed,
 		"Uploaded":   uploaded,
+		"Deleted":    deleted,
 	})
 }

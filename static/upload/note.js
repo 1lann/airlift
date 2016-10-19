@@ -52,3 +52,15 @@ $("form").form({
     onSuccess: submitForm
   }
 )
+
+$(".delete-button").click(function() {
+  var noteID = $(".ui.modal").attr("note-id");
+  $(".ui.modal").modal({
+    onApprove: function() {
+			$.post("/delete/note", {"id": noteID}, function(success) {
+        window.location = "/notes"
+      })
+			return false;
+		}
+  }).modal("show");
+})

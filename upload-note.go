@@ -83,7 +83,7 @@ func processNoteUpdate(c *gin.Context, note *airlift.Note) {
 			panic(err)
 		}
 
-		if dbNote.Author != note.Author {
+		if dbNote.Uploader != note.Uploader {
 			c.AbortWithStatus(http.StatusNotAcceptable)
 			return
 		}

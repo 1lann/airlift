@@ -7,6 +7,19 @@
 {{define "content"}}
 
 <div class="ui stackable grid">
+	{{if .Deleted}}
+	<div class="one column row">
+		<div class="column">
+			<div class="ui icon info message">
+				<i class="trash icon"></i>
+				<div class="content">
+					<div class="header">Your practice paper has been deleted</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{end}}
+
 	<div class="doubling two column row">
 		<div class="column">
 			<h1 class="ui header">

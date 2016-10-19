@@ -113,11 +113,20 @@ func viewUserNotes(c *gin.Context) {
 		}
 	}()
 
+	deleted := false
+	session := sessions.Default(c)
+	uploadFlashes := session.Flashes("upload")
+	if len(uploadFlashes) > 0 && uploadFlashes[0] == "delete" {
+		deleted = true
+	}
+	session.Save()
+
 	wg.Wait()
 
 	htmlOK(c, "notes", gin.H{
 		"ActiveMenu": "notes",
 		"Starred":    starred,
 		"Uploaded":   uploaded,
+		"Deleted":    deleted,
 	})
 }
