@@ -36,7 +36,7 @@ func init() {
 			}
 
 			htmlOK(c, "subjects-list", gin.H{
-				"ActiveMenu": "subjects",
+				"ActiveMenu": "schedule",
 				"Subjects":   subjectCards,
 			})
 		})
@@ -79,7 +79,7 @@ func init() {
 			}
 
 			htmlOK(c, "subject", gin.H{
-				"ActiveMenu":  "subjects",
+				"ActiveMenu":  "schedule",
 				"Subject":     subject,
 				"Starred":     starredNotes,
 				"OtherNotes":  otherNotes,
