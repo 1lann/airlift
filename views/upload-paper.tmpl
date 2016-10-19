@@ -40,7 +40,7 @@
 					</div>
 					<div class="five wide field">
 						<label>Year</label>
-						<input type="text" name="year" placeholder="Year published" autocomplete="off" value="{{.Paper.Year}}">
+						<input type="text" name="year" placeholder="Year published" autocomplete="off" value="{{if .Paper.Year}}{{.Paper.Year}}{{end}}">
 					</div>
 				</div>
 				<div class="two fields">
