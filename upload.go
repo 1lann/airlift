@@ -28,11 +28,11 @@ func titleCase(title string) string {
 	construct := ""
 	for _, word := range words {
 		if len(word) > 3 {
-			construct += strings.ToTitle(word[:1]) + word[1:]
+			construct += strings.ToTitle(word[:1]) + word[1:] + " "
 		}
 	}
 
-	return construct
+	return construct[:len(construct)-1]
 }
 
 func isSubject(subject string, user airlift.User) bool {
