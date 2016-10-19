@@ -44,7 +44,7 @@
 					{{range .Papers}}
 					<a class="ui fluid link green card" href="/papers/{{.ID}}">
 						<div class="ui padded grid">
-							<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
+							<div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
 								<h3 class="ui header">
 									<div class="content">
 										{{.Year}} {{.SubjectName}} {{.Title}}
@@ -52,7 +52,7 @@
 									</div>
 								</h3>
 							</div>
-							<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+							<div class="three wide computer three wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
 								<i class="green large checkmark icon"></i>
 							</div>
 						</div>
@@ -90,7 +90,7 @@
 					{{range .Papers}}
 					<a class="ui fluid link {{if .HasCompleted}}green {{end}}card" href="/papers/{{.ID}}">
 						<div class="ui padded grid">
-							<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
+							<div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
 								<h3 class="ui header">
 									<div class="content">
 										{{.Year}} {{.SubjectName}} {{.Title}}
@@ -98,7 +98,7 @@
 									</div>
 								</h3>
 							</div>
-							<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+							<div class="three wide computer three wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
 								{{if .HasCompleted}}<i class="green large checkmark icon"></i>{{end}}
 							</div>
 						</div>
