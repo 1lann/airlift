@@ -29,6 +29,8 @@ func titleCase(title string) string {
 	for _, word := range words {
 		if len(word) > 3 {
 			construct += strings.ToTitle(word[:1]) + word[1:] + " "
+		} else {
+			construct += word + " "
 		}
 	}
 
