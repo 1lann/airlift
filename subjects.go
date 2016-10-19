@@ -9,6 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type paperGroup struct {
+	Year   int
+	Papers []airlift.FullPaper
+}
+
 func init() {
 	registers = append(registers, func(r *gin.RouterGroup, t multitemplate.Render) {
 		t.AddFromFiles("subjects-list", viewsPath+"/subjects-list.tmpl",
@@ -49,8 +54,8 @@ func init() {
 
 			var starredNotes []airlift.Note
 			var otherNotes []airlift.Note
-			var uncompletedPapers []airlift.Paper
-			var completedPapers []airlift.Paper
+			var uncompPapers []paperGroup
+			var compPapers []paperGroup
 
 			for _, note := range subject.Notes {
 				if note.HasStarred {
@@ -62,9 +67,9 @@ func init() {
 
 			for _, paper := range subject.Papers {
 				if paper.HasCompleted {
-					completedPapers = append(completedPapers, paper)
+					addAndGroup(&compPapers, airlift.FullPaper{Paper: paper})
 				} else {
-					uncompletedPapers = append(uncompletedPapers, paper)
+					addAndGroup(&uncompPapers, airlift.FullPaper{Paper: paper})
 				}
 			}
 
@@ -78,11 +83,26 @@ func init() {
 				"Subject":     subject,
 				"Starred":     starredNotes,
 				"OtherNotes":  otherNotes,
-				"Completed":   completedPapers,
-				"OtherPapers": uncompletedPapers,
+				"Completed":   compPapers,
+				"OtherPapers": uncompPapers,
 				"ExamTime":    formatScheduleTime(subject.ExamTime),
 				"ExamPassed":  time.Now().After(subject.ExamTime),
 			})
 		})
 	})
+}
+
+func addAndGroup(papers *[]paperGroup, paper airlift.FullPaper) {
+	if len(*papers) == 0 ||
+		(*papers)[len(*papers)-1].Year != paper.Year {
+		*papers = append(*papers, paperGroup{
+			Year:   paper.Year,
+			Papers: []airlift.FullPaper{paper},
+		})
+	} else {
+		(*papers)[len(*papers)-1].Papers = append(
+			(*papers)[len(*papers)-1].Papers,
+			paper,
+		)
+	}
 }

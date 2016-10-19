@@ -100,27 +100,35 @@ func viewUserPapers(c *gin.Context) {
 	wg := new(sync.WaitGroup)
 	wg.Add(2)
 
-	var completed []airlift.FullPaper
+	var completed []paperGroup
 	go func() {
 		defer func() {
 			wg.Done()
 		}()
 		var err error
-		completed, err = airlift.GetCompletedPapers(user.Username)
+		dbCompleted, err := airlift.GetCompletedPapers(user.Username)
 		if err != nil {
 			panic(err)
 		}
+
+		for _, complete := range dbCompleted {
+			addAndGroup(&completed, complete)
+		}
 	}()
 
-	var uploaded []airlift.FullPaper
+	var uploaded []paperGroup
 	go func() {
 		defer func() {
 			wg.Done()
 		}()
 		var err error
-		uploaded, err = airlift.GetUploadedPapers(user.Username)
+		dbUploaded, err := airlift.GetUploadedPapers(user.Username)
 		if err != nil {
 			panic(err)
+		}
+
+		for _, upload := range dbUploaded {
+			addAndGroup(&uploaded, upload)
 		}
 	}()
 

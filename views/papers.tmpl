@@ -1,6 +1,10 @@
 {{define "title"}}Practice Papers{{end}}
-{{define "scripts"}}{{end}}
-{{define "styles"}}{{end}}
+{{define "scripts"}}
+<script type="text/javascript" src="/static/accordion/script.js"></script>
+{{end}}
+{{define "styles"}}
+<link href="/static/accordion/style.css" type="text/css" rel="stylesheet">
+{{end}}
 
 {{template "header"}}
 
@@ -22,6 +26,52 @@
 	<div class="one column row">
 		<div class="column">
 			<h1 class="ui header">
+				<i class="green checkmark icon"></i>
+				<div class="content">
+					Completed practice papers
+					<div class="sub header">Practice papers you have completed</div>
+				</div>
+			</h1>
+
+			{{if .Completed}}
+			<div class="ui styled fluid accordion">
+			{{range .Completed}}
+				<div class="title">
+					<i class="dropdown icon"></i>
+					{{.Year}} papers
+				</div>
+				<div class="content">
+					{{range .Papers}}
+					<a class="ui fluid link green card" href="/papers/{{.ID}}">
+						<div class="ui padded grid">
+							<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
+								<h3 class="ui header">
+									<div class="content">
+										{{.Year}} {{.SubjectName}} {{.Title}}
+										<div class="sub header">from {{.Author}}</div>
+									</div>
+								</h3>
+							</div>
+							<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+								<i class="green large checkmark icon"></i>
+							</div>
+						</div>
+					</a>
+					{{end}}
+				</div>
+				{{end}}
+			</div>
+			{{else}}
+				<div class="ui disabled header">
+					You haven't completed any papers yet!
+				</div>
+			{{end}}
+		</div>
+	</div>
+
+	<div class="one column row">
+		<div class="column">
+			<h1 class="ui header">
 				<i class="file text outline icon"></i>
 				<div class="content">
 					Your uploaded practice papers
@@ -30,23 +80,33 @@
 			</h1>
 
 			{{if .Uploaded}}
-				{{range .Uploaded}}
-				<a class="ui fluid link {{if .HasCompleted}}green {{end}}card" href="/papers/{{.ID}}">
-					<div class="ui padded grid">
-						<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
-							<h3 class="ui header">
-								<div class="content">
-									{{.Year}} {{.SubjectName}} {{.Title}}
-									<div class="sub header">from {{.Author}}</div>
-								</div>
-							</h3>
+			<div class="ui styled fluid accordion">
+			{{range .Uploaded}}
+				<div class="title">
+					<i class="dropdown icon"></i>
+					{{.Year}} papers
+				</div>
+				<div class="content">
+					{{range .Papers}}
+					<a class="ui fluid link {{if .HasCompleted}}green {{end}}card" href="/papers/{{.ID}}">
+						<div class="ui padded grid">
+							<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
+								<h3 class="ui header">
+									<div class="content">
+										{{.Year}} {{.SubjectName}} {{.Title}}
+										<div class="sub header">from {{.Author}}</div>
+									</div>
+								</h3>
+							</div>
+							<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+								{{if .HasCompleted}}<i class="green large checkmark icon"></i>{{end}}
+							</div>
 						</div>
-						<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
-							{{if .HasCompleted}}<i class="green large checkmark icon"></i>{{end}}
-						</div>
-					</div>
-				</a>
+					</a>
+					{{end}}
+				</div>
 				{{end}}
+			</div>
 			{{else}}
 				<div class="ui disabled header">
 					You haven't uploaded any papers yet!
@@ -66,42 +126,6 @@
 					</div>
 				</div>
 			</a>
-		</div>
-	</div>
-
-	<div class="one column row">
-		<div class="column">
-			<h1 class="ui header">
-				<i class="green checkmark icon"></i>
-				<div class="content">
-					Completed practice papers
-					<div class="sub header">Practice papers you have completed</div>
-				</div>
-			</h1>
-
-			{{if .Completed}}
-				{{range .Completed}}
-				<a class="ui fluid link green card" href="/papers/{{.ID}}">
-					<div class="ui padded grid">
-						<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
-							<h3 class="ui header">
-								<div class="content">
-									{{.Year}} {{.SubjectName}} {{.Title}}
-									<div class="sub header">from {{.Author}}</div>
-								</div>
-							</h3>
-						</div>
-						<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
-							<i class="green large checkmark icon"></i>
-						</div>
-					</div>
-				</a>
-				{{end}}
-			{{else}}
-				<div class="ui disabled header">
-					You haven't completed any papers yet!
-				</div>
-			{{end}}
 		</div>
 	</div>
 </div>
