@@ -18,8 +18,8 @@ type Note struct {
 	Author      string    `gorethink:"author"`
 	Uploader    string    `gorethink:"uploader"`
 	Public      bool      `gorethink:"public"`
-	Size        uint64    `gorethink:"size"`
 	Stars       []string  `gorethink:"stars"`
+	Size        uint64    `gorethink:"size,omitempty"`
 	HasStarred  bool      `gorethink:"has_starred,omitempty"`
 	NumStars    int       `gorethink:"num_stars,omitempty"`
 	UpdatedTime time.Time `gorethink:"updated_time,omitempty"`

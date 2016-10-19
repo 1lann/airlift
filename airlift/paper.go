@@ -19,11 +19,11 @@ type Paper struct {
 	Subject       string    `gorethink:"subject"`
 	Author        string    `gorethink:"author"`
 	Public        bool      `gorethink:"public"`
-	SolutionsSize uint64    `gorethink:"solutions_size"`
-	SourceSize    uint64    `gorethink:"source_size"`
-	QuestionsSize uint64    `gorethink:"questions_size"`
 	Completed     []string  `gorethink:"completed"`
 	Uploader      string    `gorethink:"uploader"`
+	SolutionsSize uint64    `gorethink:"solutions_size,omitempty"`
+	SourceSize    uint64    `gorethink:"source_size,omitempty"`
+	QuestionsSize uint64    `gorethink:"questions_size,omitempty"`
 	HasCompleted  bool      `gorethink:"has_completed,omitempty"`
 	NumCompleted  int       `gorethink:"num_completed,omitempty"`
 	UpdatedTime   time.Time `gorethink:"updated_time,omitempty"`
