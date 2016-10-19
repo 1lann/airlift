@@ -23,6 +23,18 @@ func isTitleValid(name string) bool {
 	return true
 }
 
+func titleCase(title string) string {
+	words := strings.Split(title, " ")
+	construct := ""
+	for _, word := range words {
+		if len(word) > 3 {
+			construct += strings.ToTitle(word[:1]) + word[1:]
+		}
+	}
+
+	return construct
+}
+
 func isSubject(subject string, user airlift.User) bool {
 	for _, class := range user.Schedule {
 		if class == subject {

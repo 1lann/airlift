@@ -11,13 +11,13 @@ import (
 )
 
 func parseNoteForm(c *gin.Context) (airlift.Note, error) {
-	title := strings.Title(strings.TrimSpace(c.PostForm("title")))
+	title := titleCase(strings.TrimSpace(c.PostForm("title")))
 	if !isTitleValid(title) {
 		return airlift.Note{}, errors.New("upload: form validation error")
 
 	}
 
-	author := strings.Title(strings.TrimSpace(c.PostForm("author")))
+	author := titleCase(strings.TrimSpace(c.PostForm("author")))
 	if author == "" {
 		return airlift.Note{}, errors.New("upload: form validation error")
 
