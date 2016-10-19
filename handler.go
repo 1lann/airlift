@@ -117,13 +117,10 @@ func authMiddleware(c *gin.Context) {
 
 func registerBaseHandlers(r *gin.Engine, t multitemplate.Render) {
 	r.Use(secure.Secure(secure.Options{
-		AllowedHosts:         []string{"airlift.chuie.io"},
-		SSLRedirect:          true,
-		STSSeconds:           315360000,
-		STSIncludeSubdomains: true,
-		FrameDeny:            true,
-		ContentTypeNosniff:   true,
-		BrowserXssFilter:     true,
+		AllowedHosts:       []string{"airlift.chuie.io"},
+		FrameDeny:          true,
+		ContentTypeNosniff: true,
+		BrowserXssFilter:   true,
 		ContentSecurityPolicy: "default-src 'self'; " +
 			"style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com data:;",
 	}))
