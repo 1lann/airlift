@@ -35,7 +35,6 @@ func parseNoteForm(c *gin.Context) (airlift.Note, error) {
 		Public:   true,
 		Author:   author,
 		Subject:  subject,
-		Stars:    []string{user.Username},
 		Uploader: user.Username,
 	}, nil
 }
@@ -99,6 +98,9 @@ func processNoteUpdate(c *gin.Context, note *airlift.Note) {
 		if err != nil {
 			panic(err)
 		}
+
+		user := c.MustGet("user").(airlift.User)
+		note.Stars = []string{user.Username}
 		session.AddFlash("success", "upload")
 	}
 

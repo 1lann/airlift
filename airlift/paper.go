@@ -30,6 +30,21 @@ type Paper struct {
 	UploadTime    time.Time `gorethink:"upload_time,omitempty"`
 }
 
+type updatePaper struct {
+	ID            string    `gorethink:"id"`
+	Title         string    `gorethink:"title"`
+	Year          int       `gorethink:"year"`
+	Subject       string    `gorethink:"subject"`
+	Author        string    `gorethink:"author"`
+	Public        bool      `gorethink:"public"`
+	Uploader      string    `gorethink:"uploader"`
+	Completed     []string  `gorethink:"completed,omitempty"`
+	SolutionsSize uint64    `gorethink:"solutions_size,omitempty"`
+	SourceSize    uint64    `gorethink:"source_size,omitempty"`
+	QuestionsSize uint64    `gorethink:"questions_size,omitempty"`
+	UpdatedTime   time.Time `gorethink:"updated_time,omitempty"`
+}
+
 // FullPaper represents a user uploaded paper with additional data
 type FullPaper struct {
 	Paper
@@ -41,8 +56,6 @@ var rowFullPaperTitle = func(row r.Term) interface{} {
 	return row.Field("year").CoerceTo("string").
 		Add(" ", row.Field("subject"), " ", row.Field("title"))
 }
-
-// TODO: Make a get full paper and use it in download.go
 
 // GetPaper returns a paper given its ID
 func GetPaper(id string) (Paper, error) {
@@ -69,10 +82,22 @@ func idFromPaper(paper Paper) (string, error) {
 
 // UpdatePaper updates the information of a paper
 func UpdatePaper(paper Paper) error {
-	paper.UpdatedTime = time.Now()
-	paper.UploadTime = time.Time{}
+	updatedPaper := updatePaper{
+		ID:            paper.ID,
+		Title:         paper.Title,
+		Year:          paper.Year,
+		Subject:       paper.Subject,
+		Author:        paper.Author,
+		Uploader:      paper.Uploader,
+		Public:        paper.Public,
+		Completed:     paper.Completed,
+		SolutionsSize: paper.SolutionsSize,
+		SourceSize:    paper.SourceSize,
+		QuestionsSize: paper.QuestionsSize,
+		UpdatedTime:   time.Now(),
+	}
 
-	result, err := r.Table("papers").Get(paper.ID).Update(paper).RunWrite(session)
+	result, err := r.Table("papers").Get(paper.ID).Update(updatedPaper).RunWrite(session)
 	if err != nil {
 		return err
 	}
