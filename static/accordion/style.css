@@ -1,3 +1,15 @@
 .ui.styled.accordion .content {
 	padding: 0;
 }
+
+.ui.styled.accordion .card {
+	margin: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: 0 1px 1px 0 #D4D4D5, 0 0 0 1px #D4D4D5;
+	transform: 0;
+}
+
+.ui.styled.accordion .card:hover {
+	box-shadow: 0 1px 1px 0 #BCBDBD, 0 0 0 1px #D4D4D5;
+	transform: none;
+}
