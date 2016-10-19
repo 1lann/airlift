@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/1lann/airlift/airlift"
 	"github.com/gin-gonic/contrib/renders/multitemplate"
@@ -73,7 +74,14 @@ func init() {
 			}
 
 			htmlOK(c, "subject", gin.H{
-				"ActiveMenu": "subjects",
+				"ActiveMenu":  "subjects",
+				"Subject":     subject,
+				"Starred":     starredNotes,
+				"OtherNotes":  otherNotes,
+				"Completed":   completedPapers,
+				"OtherPapers": uncompletedPapers,
+				"ExamTime":    formatScheduleTime(subject.ExamTime),
+				"ExamPassed":  time.Now().After(subject.ExamTime),
 			})
 		})
 	})

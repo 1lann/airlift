@@ -1,8 +1,8 @@
-{{define "title"}}Test Subject{{end}}
+{{define "title"}}{{.Subject.Name}}{{end}}
 {{define "scripts"}}{{end}}
 {{define "styles"}}{{end}}
 
-{{template "header"}}
+{{template "header" .}}
 
 {{define "content"}}
 
@@ -12,10 +12,20 @@
 			<h1 class="ui header">
 				<i class="book icon"></i>
 				<div class="content">
-					Economics
-					<div class="sub header">Wednesday, 20th June at 1:20 PM</div>
+					{{.Subject.Name}}
+					<div class="sub header">{{.ExamTime}}</div>
 				</div>
 			</h1>
+
+			{{if .ExamPassed}}
+			<div class="ui icon message">
+				<i class="archive icon"></i>
+				<div class="content">
+					<div class="header">The {{.Subject.Name}} exam has already passed</div>
+					You are viewing an archive of {{.Subject.Name}} notes and practice papers.
+				</div>
+			</div>
+			{{end}}
 		</div>
 	</div>
 
@@ -25,67 +35,33 @@
 				<i class="yellow star icon"></i>
 				<div class="content">
 					Starred notes
-					<div class="sub header">Economics notes you have starred</div>
+					<div class="sub header">{{.Subject.Name}} notes you have starred</div>
 				</div>
 			</h2>
 
-			<a class="ui fluid link card" href="">
-				<div class="ui padded grid">
-					<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
-						<h3 class="ui header">
-							<div class="content">
-								Curly Chemistry
-								<div class="sub header">by Leo Li</div>
-							</div>
-						</h3>
+			{{if .Starred}}
+				{{range .Starred}}
+				<a class="ui fluid link card" href="/notes/{{.ID}}">
+					<div class="ui padded grid">
+						<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
+							<h3 class="ui header">
+								<div class="content">
+									{{.Title}}
+									<div class="sub header">by {{.Author}}</div>
+								</div>
+							</h3>
+						</div>
+						<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+							{{.NumStars}} <i class="yellow star icon"></i>
+						</div>
 					</div>
-					<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
-						20 <i class="yellow star icon"></i>
-					</div>
+				</a>
+				{{end}}
+			{{else}}
+				<div class="ui disabled header">
+					You haven't starred any notes yet!
 				</div>
-			</a>
-
-			<div class="ui disabled header">
-				You haven't starred any notes yet!
-			</div>
-
-			<h2 class="ui header">
-				<i class="sticky note outline icon"></i>
-				<div class="content">
-					Other notes
-					<div class="sub header">Unstarred Economics notes</div>
-				</div>
-			</h2>
-
-			<a class="ui fluid link card" href="">
-				<div class="ui padded grid">
-					<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
-						<h3 class="ui header">
-							<div class="content">
-								Curly Chemistry
-								<div class="sub header">by Leo Li</div>
-							</div>
-						</h3>
-					</div>
-					<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
-						20 <i class="star icon"></i>
-					</div>
-				</div>
-			</a>
-
-			<a class="ui fluid link blue card" href="/upload/note">
-				<div class="ui padded grid">
-					<div class="sixteen wide column">
-						<h3 class="ui blue header">
-							<i class="upload icon"></i>
-							<div class="content">
-								Upload your Economics notes
-								<div class="sub header">Sharing your notes benefits everyone</div>
-							</div>
-						</h3>
-					</div>
-				</div>
-			</a>
+			{{end}}
 		</div>
 
 		<div class="column">
@@ -97,21 +73,83 @@
 				</div>
 			</h1>
 
-			<a class="ui fluid link card" href="">
+			{{if .OtherPapers}}
+				{{range .OtherPapers}}
+				<a class="ui fluid link card" href="/papers/{{.ID}}">
+					<div class="ui padded grid">
+						<div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+							<h3 class="ui header">
+								<div class="content">
+									{{.Year}} {{.Title}}
+									<div class="sub header">from {{.Author}}</div>
+								</div>
+							</h3>
+						</div>
+						<div class="three wide computer three wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+						</div>
+					</div>
+				</a>
+				{{end}}
+			{{else}}
+				<div class="ui disabled header">
+					There aren't any {{.Subject.Name}} practice papers you haven't completed.
+				</div>
+			{{end}}
+
+
+		</div>
+	</div>
+
+	<div class="doubling two column row">
+		<div class="column">
+			<h2 class="ui header">
+				<i class="file text outline icon"></i>
+				<div class="content">
+					Other notes
+					<div class="sub header">Other {{.Subject.Name}} notes you haven't starred</div>
+				</div>
+			</h2>
+
+			{{if .OtherNotes}}
+				{{range .OtherNotes}}
+				<a class="ui fluid link card" href="/notes/{{.ID}}">
+					<div class="ui padded grid">
+						<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
+							<h3 class="ui header">
+								<div class="content">
+									{{.Title}}
+									<div class="sub header">by {{.Author}}</div>
+								</div>
+							</h3>
+						</div>
+						<div class="five wide computer five wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+							{{.NumStars}} <i class="grey star icon"></i>
+						</div>
+					</div>
+				</a>
+				{{end}}
+			{{else}}
+				<div class="ui disabled header">
+					There aren't any other notes for {{.Subject.Name}}.
+				</div>
+			{{end}}
+
+			<a class="ui fluid link blue card" href="/upload/note?subject={{.Subject.ID}}">
 				<div class="ui padded grid">
-					<div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
-						<h3 class="ui header">
+					<div class="sixteen wide column">
+						<h3 class="ui blue header">
+							<i class="upload icon"></i>
 							<div class="content">
-								2016 Practice Paper A
-								<div class="sub header">from WA Test Papers</div>
+								Upload your {{.Subject.Name}} notes
+								<div class="sub header">Sharing your notes benefits everyone</div>
 							</div>
 						</h3>
 					</div>
-					<div class="three wide computer three wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
-					</div>
 				</div>
 			</a>
+		</div>
 
+		<div class="column">
 			<h1 class="ui header">
 				<i class="green checkmark icon"></i>
 				<div class="content">
@@ -120,29 +158,37 @@
 				</div>
 			</h1>
 
-			<a class="ui fluid link card" href="">
-				<div class="ui padded grid">
-					<div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
-						<h3 class="ui header">
-							<div class="content">
-								2016 Practice Paper A
-								<div class="sub header">for Chemistry from Hale</div>
-							</div>
-						</h3>
+			{{if .Completed}}
+				{{range .Completed}}
+				<a class="ui fluid link green card" href="/papers/{{.ID}}">
+					<div class="ui padded grid">
+						<div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+							<h3 class="ui header">
+								<div class="content">
+									{{.Year}} {{.Title}}
+									<div class="sub header">for {{.Author}}</div>
+								</div>
+							</h3>
+						</div>
+						<div class="three wide computer three wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
+							<i class="large green checkmark icon"></i>
+						</div>
 					</div>
-					<div class="three wide computer three wide tablet sixteen wide mobile middle aligned right aligned column grey-text">
-						<i class="large green checkmark icon"></i>
-					</div>
+				</a>
+				{{end}}
+			{{else}}
+				<div class="ui disabled header">
+					You haven't completed any {{.Subject.Name}} practice papers yet!
 				</div>
-			</a>
+			{{end}}
 
-			<a class="ui fluid link blue card" href="/upload/note">
+			<a class="ui fluid link blue card" href="/upload/paper?subject={{.Subject.ID}}">
 				<div class="ui padded grid">
 					<div class="sixteen wide column">
 						<h3 class="ui blue header">
 							<i class="upload icon"></i>
 							<div class="content">
-								Upload a Economics practice paper
+								Upload a {{.Subject.Name}} practice paper
 								<div class="sub header">Make it easier for your peers to find practice papers</div>
 							</div>
 						</h3>

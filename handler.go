@@ -43,6 +43,8 @@ func main() {
 	store.Options(sessions.Options{
 		HttpOnly: true,
 		Path:     "/",
+		Secure:   true,
+		Domain:   "airlift.chuie.io",
 	})
 	r.Use(sessions.Sessions("airlift", store))
 
@@ -115,14 +117,13 @@ func authMiddleware(c *gin.Context) {
 
 func registerBaseHandlers(r *gin.Engine, t multitemplate.Render) {
 	r.Use(secure.Secure(secure.Options{
-		// TODO: Make secure
-		// AllowedHosts:          []string{"example.com", "ssl.example.com"},
-		// SSLRedirect:           true,
-		// STSSeconds:            315360000,
-		// STSIncludeSubdomains:  true,
-		FrameDeny:          true,
-		ContentTypeNosniff: true,
-		BrowserXssFilter:   true,
+		AllowedHosts:         []string{"airlift.chuie.io"},
+		SSLRedirect:          true,
+		STSSeconds:           315360000,
+		STSIncludeSubdomains: true,
+		FrameDeny:            true,
+		ContentTypeNosniff:   true,
+		BrowserXssFilter:     true,
 		ContentSecurityPolicy: "default-src 'self'; " +
 			"style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com data:;",
 	}))
@@ -173,11 +174,5 @@ func init() {
 	registers = append(registers, func(r *gin.RouterGroup, t multitemplate.Render) {
 		t.AddFromFiles("error", viewsPath+"/error.tmpl",
 			viewsPath+"/components/base.tmpl")
-	})
-
-	registers = append(registers, func(r *gin.RouterGroup, t multitemplate.Render) {
-		r.GET("/error", func(c *gin.Context) {
-			panic("memes")
-		})
 	})
 }
