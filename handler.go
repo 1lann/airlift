@@ -40,12 +40,7 @@ func main() {
 	registerBaseHandlers(r, t)
 
 	store := sessions.NewCookieStore([]byte(sessionSecret))
-	store.Options(sessions.Options{
-		HttpOnly: true,
-		Path:     "/",
-		Secure:   true,
-		Domain:   "airlift.chuie.io",
-	})
+	store.Options(sessionOpts)
 	r.Use(sessions.Sessions("airlift", store))
 
 	rg := r.Group("/")
@@ -116,14 +111,7 @@ func authMiddleware(c *gin.Context) {
 }
 
 func registerBaseHandlers(r *gin.Engine, t multitemplate.Render) {
-	r.Use(secure.Secure(secure.Options{
-		AllowedHosts:       []string{"airlift.chuie.io"},
-		FrameDeny:          true,
-		ContentTypeNosniff: true,
-		BrowserXssFilter:   true,
-		ContentSecurityPolicy: "default-src 'self'; " +
-			"style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com data:;",
-	}))
+	r.Use(secure.Secure(secureOpts))
 
 	r.Use(func(c *gin.Context) {
 		defer func() {
