@@ -50,7 +50,7 @@ function submitForm(evt, fields) {
   }
 
   var solutionsFile = $("#solutions-field input").get(0).files[0]
-  if (solutionsFile && file.size > 210000000) {
+  if (solutionsFile && solutionsFile.size > 210000000) {
     // If larger than 200 MB
     displayError("Chosen file is too large", "The paper's solutions cannot be larger than 200 MB.")
     $(".button-text").text("Try again")
