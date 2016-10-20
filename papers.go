@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"sync"
 
@@ -41,7 +40,6 @@ func viewPaper(c *gin.Context) {
 	user := c.MustGet("user").(airlift.User)
 
 	paper, err := airlift.GetFullPaper(id, user.Username)
-	log.Println(paper)
 	if err != nil {
 		panic(err)
 	}

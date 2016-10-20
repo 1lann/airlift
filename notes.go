@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -65,7 +64,6 @@ func viewNote(c *gin.Context) {
 
 	session := sessions.Default(c)
 	uploadFlashes := session.Flashes("upload")
-	log.Println(uploadFlashes)
 	uploadSuccess := ""
 	if len(uploadFlashes) > 0 {
 		uploadSuccess = uploadFlashes[0].(string)
