@@ -178,7 +178,7 @@ func SetPaperCompleted(id, username string, completed bool) error {
 	return nil
 }
 
-// GetCompletedPapers returns the papers starred by a user.
+// GetCompletedPapers returns the papers completed by a user.
 func GetCompletedPapers(username string) ([]FullPaper, error) {
 	var papers []FullPaper
 	err := getAll(r.Table("papers").

@@ -1,6 +1,12 @@
 package airlift
 
-import r "github.com/dancannon/gorethink"
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+
+	r "github.com/dancannon/gorethink"
+)
 
 // User represents a user.
 type User struct {
@@ -13,18 +19,36 @@ type User struct {
 }
 
 func getOne(term r.Term, result interface{}) error {
-	c, err := term.Run(session)
+	start := time.Now()
+	c, err := term.Run(session, r.RunOpts{
+		Profile: true,
+	})
 	if err != nil {
 		return err
+	}
+
+	if time.Since(start) > time.Millisecond*15 {
+		fmt.Println("Slow query warning, took", time.Since(start).Seconds(), "seconds")
+		resp, _ := json.MarshalIndent(c.Profile(), "", "\t")
+		fmt.Println(string(resp))
 	}
 
 	return c.One(result)
 }
 
 func getAll(term r.Term, result interface{}) error {
-	c, err := term.Run(session)
+	start := time.Now()
+	c, err := term.Run(session, r.RunOpts{
+		Profile: true,
+	})
 	if err != nil {
 		return err
+	}
+
+	if time.Since(start) > time.Millisecond*15 {
+		fmt.Println("Slow query warning, took", time.Since(start).Seconds(), "seconds")
+		resp, _ := json.MarshalIndent(c.Profile(), "", "\t")
+		fmt.Println(string(resp))
 	}
 
 	return c.All(result)
