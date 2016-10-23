@@ -153,7 +153,11 @@ func init() {
 	gob.Register(showMessage{})
 
 	registers = append(registers, func(r *gin.RouterGroup, t multitemplate.Render) {
-		r.Static("/static", packagePath+"/static")
+		rg := r.Group("/static")
+		rg.Use(func(c *gin.Context) {
+			c.Header("Cache-Control", "max-age=86400")
+		})
+		rg.Static("/static", packagePath+"/static")
 	})
 
 	registers = append(registers, func(r *gin.RouterGroup, t multitemplate.Render) {
