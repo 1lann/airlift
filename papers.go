@@ -98,22 +98,6 @@ func viewUserPapers(c *gin.Context) {
 	wg := new(sync.WaitGroup)
 	wg.Add(2)
 
-	var completed []paperGroup
-	go func() {
-		defer func() {
-			wg.Done()
-		}()
-		var err error
-		dbCompleted, err := airlift.GetCompletedPapers(user.Username)
-		if err != nil {
-			panic(err)
-		}
-
-		for _, complete := range dbCompleted {
-			addAndGroup(&completed, complete)
-		}
-	}()
-
 	var uploaded []paperGroup
 	go func() {
 		defer func() {
@@ -127,6 +111,22 @@ func viewUserPapers(c *gin.Context) {
 
 		for _, upload := range dbUploaded {
 			addAndGroup(&uploaded, upload)
+		}
+	}()
+
+	var completed []paperGroup
+	go func() {
+		defer func() {
+			wg.Done()
+		}()
+		var err error
+		dbCompleted, err := airlift.GetCompletedPapers(user.Username)
+		if err != nil {
+			panic(err)
+		}
+
+		for _, complete := range dbCompleted {
+			addAndGroup(&completed, complete)
 		}
 	}()
 
