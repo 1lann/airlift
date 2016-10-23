@@ -28,6 +28,7 @@ function submitForm(evt, fields) {
 
   currentlyUploading = true
   $("button[type='submit']").addClass("disabled loading")
+  $(".delete-button").addClass("disabled")
   $(".progress").show()
 
   var fd = new FormData()

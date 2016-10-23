@@ -86,6 +86,7 @@ function uploadForm(fd, url) {
       displayError("Upload failed", errorMessage)
 
       $("button[type='submit']").removeClass("disabled loading")
+      $(".delete-button").removeClass("disabled")
       $(".button-text").text("Try again")
 
       console.log("upload failed", result)
