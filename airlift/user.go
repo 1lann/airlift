@@ -27,7 +27,7 @@ func getOne(term r.Term, result interface{}) error {
 		return err
 	}
 
-	if time.Since(start) > time.Millisecond*15 {
+	if time.Since(start) > time.Millisecond*90 {
 		fmt.Println("Slow query warning, took", time.Since(start).Seconds(), "seconds")
 		resp, _ := json.MarshalIndent(c.Profile(), "", "  ")
 		fmt.Println(string(resp))
@@ -45,7 +45,7 @@ func getAll(term r.Term, result interface{}) error {
 		return err
 	}
 
-	if time.Since(start) > time.Millisecond*15 {
+	if time.Since(start) > time.Millisecond*90 {
 		fmt.Println("Slow query warning, took", time.Since(start).Seconds(), "seconds")
 		resp, _ := json.MarshalIndent(c.Profile(), "", "  ")
 		fmt.Println(string(resp))
