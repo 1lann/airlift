@@ -183,7 +183,6 @@ func GetCompletedPapers(username string) ([]FullPaper, error) {
 	var papers []FullPaper
 	err := getAll(r.Table("papers").
 		GetAllByIndex("completed", username).
-		OrderBy(r.Desc(rowFullPaperTitle)).
 		EqJoin("uploader", r.Table("users"), r.EqJoinOpts{Index: "username"}).
 		EqJoin(r.Row.Field("left").Field("subject"), r.Table("subjects"), r.EqJoinOpts{Index: "id"}).
 		Map(func(row r.Term) interface{} {
@@ -192,7 +191,8 @@ func GetCompletedPapers(username string) ([]FullPaper, error) {
 				"uploader_name": row.Field("left").Field("right").Field("name"),
 				"subject_name":  row.Field("right").Field("name"),
 			})
-		}),
+		}).
+		OrderBy(r.Desc(rowFullPaperTitle)),
 		&papers)
 	return papers, err
 }
@@ -202,7 +202,6 @@ func GetUploadedPapers(username string) ([]FullPaper, error) {
 	var papers []FullPaper
 	err := getAll(r.Table("papers").
 		GetAllByIndex("uploader", username).
-		OrderBy(r.Desc(rowFullPaperTitle)).
 		EqJoin("uploader", r.Table("users"), r.EqJoinOpts{Index: "username"}).
 		EqJoin(r.Row.Field("left").Field("subject"), r.Table("subjects"), r.EqJoinOpts{Index: "id"}).
 		Map(func(row r.Term) interface{} {
@@ -211,7 +210,8 @@ func GetUploadedPapers(username string) ([]FullPaper, error) {
 				"uploader_name": row.Field("left").Field("right").Field("name"),
 				"subject_name":  row.Field("right").Field("name"),
 			})
-		}),
+		}).
+		OrderBy(r.Desc(rowFullPaperTitle)),
 		&papers)
 	return papers, err
 }
