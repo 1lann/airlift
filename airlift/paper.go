@@ -184,14 +184,14 @@ func GetCompletedPapers(username string) ([]FullPaper, error) {
 	err := getAll(r.Table("papers").
 		GetAllByIndex("completed", username).
 		OrderBy(r.Desc(rowFullPaperTitle)).
-		Merge(func(row r.Term) interface{} {
-			return map[string]interface{}{
-				"has_completed": row.Field("completed").Contains(username),
-				"uploader_name": r.Table("users").Get(row.Field("uploader")).
-					Field("name").Default("Unknown"),
-				"subject_name": r.Table("subjects").Get(row.Field("subject")).
-					Field("name").Default("Unknown"),
-			}
+		EqJoin("uploader", r.Table("users"), r.EqJoinOpts{Index: "uploader"}).
+		EqJoin(r.Row.Field("left").Field("subject"), r.Table("subjects"), r.EqJoinOpts{Index: "id"}).
+		Map(func(row r.Term) interface{} {
+			return row.Field("left").Field("left").Merge(map[string]interface{}{
+				"has_completed": row.Field("left").Field("left").Field("completed").Contains(username),
+				"uploader_name": row.Field("left").Field("right").Field("name"),
+				"subject_name":  row.Field("right").Field("name"),
+			})
 		}),
 		&papers)
 	return papers, err
@@ -203,14 +203,14 @@ func GetUploadedPapers(username string) ([]FullPaper, error) {
 	err := getAll(r.Table("papers").
 		GetAllByIndex("uploader", username).
 		OrderBy(r.Desc(rowFullPaperTitle)).
-		Merge(func(row r.Term) interface{} {
-			return map[string]interface{}{
-				"has_completed": row.Field("completed").Contains(username),
-				"uploader_name": r.Table("users").Get(row.Field("uploader")).
-					Field("name").Default("Unknown"),
-				"subject_name": r.Table("subjects").Get(row.Field("subject")).
-					Field("name").Default("Unknown"),
-			}
+		EqJoin("uploader", r.Table("users"), r.EqJoinOpts{Index: "uploader"}).
+		EqJoin(r.Row.Field("left").Field("subject"), r.Table("subjects"), r.EqJoinOpts{Index: "id"}).
+		Map(func(row r.Term) interface{} {
+			return row.Field("left").Field("left").Merge(map[string]interface{}{
+				"has_completed": row.Field("left").Field("left").Field("completed").Contains(username),
+				"uploader_name": row.Field("left").Field("right").Field("name"),
+				"subject_name":  row.Field("right").Field("name"),
+			})
 		}),
 		&papers)
 	return papers, err
