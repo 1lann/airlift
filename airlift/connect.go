@@ -35,7 +35,7 @@ func getOne(term r.Term, result interface{}) error {
 	}
 
 	if enableProfiling {
-		if time.Since(start) > time.Millisecond*90 {
+		if time.Since(start) > time.Millisecond*30 {
 			fmt.Println("Slow query warning, took", time.Since(start).Seconds(), "seconds")
 			resp, _ := json.MarshalIndent(c.Profile(), "", "  ")
 			fmt.Println(string(resp))
@@ -55,7 +55,7 @@ func getAll(term r.Term, result interface{}) error {
 	}
 
 	if enableProfiling {
-		if time.Since(start) > time.Millisecond*90 {
+		if time.Since(start) > time.Millisecond*30 {
 			fmt.Println("Slow query warning, took", time.Since(start).Seconds(), "seconds")
 			resp, _ := json.MarshalIndent(c.Profile(), "", "  ")
 			fmt.Println(string(resp))

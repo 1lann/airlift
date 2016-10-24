@@ -1,12 +1,6 @@
 package airlift
 
-import (
-	"encoding/json"
-	"fmt"
-	"time"
-
-	r "github.com/dancannon/gorethink"
-)
+import r "github.com/dancannon/gorethink"
 
 // User represents a user.
 type User struct {
@@ -16,42 +10,6 @@ type User struct {
 	Password    string   `gorethink:"password,omitempty"`
 	Schedule    []string `gorethink:"schedule,omitempty"`
 	RawSchedule []string `gorethink:"raw_schedule,omitempty"`
-}
-
-func getOne(term r.Term, result interface{}) error {
-	start := time.Now()
-	c, err := term.Run(session, r.RunOpts{
-		Profile: true,
-	})
-	if err != nil {
-		return err
-	}
-
-	if time.Since(start) > time.Millisecond*90 {
-		fmt.Println("Slow query warning, took", time.Since(start).Seconds(), "seconds")
-		resp, _ := json.MarshalIndent(c.Profile(), "", "  ")
-		fmt.Println(string(resp))
-	}
-
-	return c.One(result)
-}
-
-func getAll(term r.Term, result interface{}) error {
-	start := time.Now()
-	c, err := term.Run(session, r.RunOpts{
-		Profile: true,
-	})
-	if err != nil {
-		return err
-	}
-
-	if time.Since(start) > time.Millisecond*90 {
-		fmt.Println("Slow query warning, took", time.Since(start).Seconds(), "seconds")
-		resp, _ := json.MarshalIndent(c.Profile(), "", "  ")
-		fmt.Println(string(resp))
-	}
-
-	return c.All(result)
 }
 
 // GetUser returns the user data of a user.
