@@ -155,7 +155,7 @@ func init() {
 	registers = append(registers, func(r *gin.RouterGroup, t multitemplate.Render) {
 		rg := r.Group("/static")
 		rg.Use(func(c *gin.Context) {
-			c.Header("Cache-Control", "max-age=86400")
+			c.Header("Cache-Control", "max-age=10000000")
 		})
 		rg.Static("/", packagePath+"/static")
 	})
