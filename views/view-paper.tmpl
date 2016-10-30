@@ -21,6 +21,28 @@
 					<div class="sub header">from {{.Paper.Author}}</div>
 				</div>
 			</h1>
+
+			{{if eq .UploadSuccess "success"}}
+			<div class="ui success icon message">
+				<i class="checkmark icon"></i>
+				<div class="content">
+					<div class="header">
+						Your practice paper has been uploaded
+					</div>
+					Thanks for contributing a practice paper!
+				</div>
+			</div>
+			{{end}}
+			{{if eq .UploadSuccess "update"}}
+			<div class="ui info icon message">
+				<i class="checkmark icon"></i>
+				<div class="content">
+					<div class="header">
+						Your changes have been saved
+					</div>
+				</div>
+			</div>
+			{{end}}
 		</div>
 	</div>
 
