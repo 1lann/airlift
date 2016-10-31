@@ -74,7 +74,7 @@
 		<div class="column">
 			{{if .Past}}
 				{{range .Past}}
-					<div class="ui fluid link card {{.Color}}">
+					<a class="ui fluid link card {{.Color}}" href="{{.Link}}">
 						<div class="ui padded grid">
 							<div class="eleven wide computer eleven wide tablet sixteen wide mobile column">
 								<h3 class="ui {{.Color}} header">
@@ -91,7 +91,7 @@
 								{{.Action}} <i class="angle double right icon"></i>
 							</div>
 						</div>
-					</div>
+					</a>
 				{{end}}
 			{{else}}
 				<div class="ui disabled header">
