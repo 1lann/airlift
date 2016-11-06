@@ -116,6 +116,10 @@ func registerBaseHandlers(r *gin.Engine, t multitemplate.Render) {
 	r.Use(func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
+				if strings.Contains(fmt.Sprintf("%v", err), "write: broken pipe") {
+					return
+				}
+
 				// Recover from panic
 				stackTrace := strings.Replace(string(debug.Stack()),
 					os.Getenv("GOPATH")+"/src/", "", -1)
