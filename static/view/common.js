@@ -1,1 +1,1 @@
-$(".ui.checkbox").checkbox()
+InstantClick.init();
