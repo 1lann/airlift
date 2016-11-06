@@ -1,1 +1,0 @@
-InstantClick.init();
