@@ -77,13 +77,13 @@
 
 				<input type="hidden" name="update" value="{{.Update}}" autocomplete="off">
 
-				<button type="submit" class="ui large blue labeled icon button">
+				<button type="submit" class="ui large blue labeled icon button" data-no-instant>
 					<i class="upload icon"></i>
 					<span class="button-text">{{if .Update}}Update{{else}}Upload{{end}}</span>
 				</button>
 
 				{{if .Update}}
-				<button class="ui large red labeled icon button delete-button" type="button">
+				<button class="ui large red labeled icon button delete-button" type="button" data-no-instant>
 					<i class="trash icon"></i>
 					<span class="button-text">Delete</span>
 				</button>
@@ -94,10 +94,10 @@
 						<p>Are you sure you want to delete these notes?</p>
 					</div>
 					<div class="actions">
-						<div class="ui ok red large button">
+						<div class="ui ok red large button" data-no-instant>
 							<i class="trash icon"></i> Delete it
 						</div>
-						<div class="ui cancel green large button">
+						<div class="ui cancel green large button" data-no-instant>
 							Nevermind
 						</div>
 					</div>

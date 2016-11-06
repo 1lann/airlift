@@ -36,7 +36,7 @@
 			{{if .Completed}}
 			<div class="ui styled fluid accordion">
 			{{range .Completed}}
-				<div class="title">
+				<div class="title" data-no-instant>
 					<i class="dropdown icon"></i>
 					{{.Year}} papers
 				</div>
@@ -82,7 +82,7 @@
 			{{if .Uploaded}}
 			<div class="ui styled fluid accordion">
 			{{range .Uploaded}}
-				<div class="title">
+				<div class="title" data-no-instant>
 					<i class="dropdown icon"></i>
 					{{.Year}} papers
 				</div>
