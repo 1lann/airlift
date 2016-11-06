@@ -135,3 +135,7 @@ footer .segment {
 		width: 260.75px !important;
 	}
 }
+
+#instantclick {
+	display: none;
+}
