@@ -47,7 +47,7 @@
 		<div class="column">
 
 			{{if .Paper.HasCompleted}}
-				<div class="ui fluid link green card complete-card" paper-id="{{.Paper.ID}}">
+				<div class="ui fluid link green card complete-card" paper-id="{{.Paper.ID}}" data-no-instant>
 					<div class="ui padded grid">
 						<div class="sixteen wide column">
 							<h3 class="ui green header">
@@ -60,7 +60,7 @@
 					</div>
 				</div>
 			{{else}}
-				<div class="ui fluid link orange card complete-card" paper-id="{{.Paper.ID}}">
+				<div class="ui fluid link orange card complete-card" paper-id="{{.Paper.ID}}" data-no-instant>
 					<div class="ui padded grid">
 						<div class="sixteen wide column">
 							<h3 class="ui orange header">
